@@ -309,6 +309,27 @@ Knowing when you are conditioning on redundant variables will help derive a lot 
 
 %----------------------------------------------------------------------------------------
 \begin{frame}
+\frametitle{Examples}
+Inference about a genetic status
+\begin{itemize}
+\item An X-chromosome-linked recessive inheritance disease: $y = 1/0$
+  affected/unaffected
+\item A woman has two unaffected sons $y_1 = 0, y_2 = 0$
+\item $\theta = 1/0$ the woman is a carrier or not
+\pause
+\item Prior distribution: $p(\theta = 1) = p(\theta = 0) = 1/2$
+\item Data distribution: $p(y_1 = 0, y_2 = 0|\theta = 1)$, $p(y_1 = 0,
+  y_2 = 0|\theta = 0)$
+\pause
+\item $p(\theta|y_1 = 0, y_2 = 0)$?
+\pause
+\item If a third child exists, $p(\theta|y_1 = 0, y_2 = 0, y_3 = 0)$?
+\end{itemize}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
 \frametitle{Computation}
 
 We will be using \texttt{R}
@@ -317,7 +338,7 @@ We will be using \texttt{R}
 
 Some bookmarks:
 \begin{enumerate}
-\item \url{https://github.com/tbrown122387/stat_6440_slides} 
+\item \url{https://github.com/tamustatsy/STA695_19fall} 
 \item \url{http://www.stat.columbia.edu/~gelman/book/}
 \item \url{https://github.com/avehtari/BDA_R_demos}
 \item \url{http://www.stat.columbia.edu/~gelman/book/data/}
