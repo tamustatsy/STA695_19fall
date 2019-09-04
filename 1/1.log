@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  26 AUG 2019 12:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  28 AUG 2019 15:55
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -957,6 +957,8 @@ Package pdftex.def Info: ./pics/bayes.jpg  used on input line 164.
 
 ] [24
 
+] [25
+
 ]
 \tf@nav=\write6
 \openout6 = `1.nav'.
@@ -967,19 +969,19 @@ Package pdftex.def Info: ./pics/bayes.jpg  used on input line 164.
 \tf@snm=\write8
 \openout8 = `1.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 353.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 353.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 361.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 361.
  (./1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 353.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 353.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 361.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 361.
 Package rerunfilecheck Info: File `1.out' has not changed.
 (rerunfilecheck)             Checksum: 3EF202F55D1FAFFC25DA6FD468AB887A;38.
  ) 
 Here is how much of TeX's memory you used:
- 17167 strings out of 492649
- 328685 string characters out of 6129622
+ 17171 strings out of 492649
+ 328720 string characters out of 6129622
  404955 words of memory out of 5000000
- 20597 multiletter control sequences out of 15000+600000
+ 20599 multiletter control sequences out of 15000+600000
  11346 words of font info for 43 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  56i,15n,55p,775b,605s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -995,10 +997,10 @@ ocal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/l
 ocal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/lo
 cal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loc
 al/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on 1.pdf (24 pages, 194270 bytes).
+Output written on 1.pdf (25 pages, 197127 bytes).
 PDF statistics:
- 730 PDF objects out of 1000 (max. 8388607)
- 673 compressed objects within 7 object streams
- 50 named destinations out of 1000 (max. 500000)
+ 757 PDF objects out of 1000 (max. 8388607)
+ 699 compressed objects within 7 object streams
+ 52 named destinations out of 1000 (max. 500000)
  80 words of extra memory for PDF output out of 10000 (max. 10000000)
 

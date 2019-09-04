@@ -330,6 +330,14 @@ Inference about a genetic status
 
 %----------------------------------------------------------------------------------------
 \begin{frame}
+  \frametitle{Sequential inference is easy}
+\[
+ p(\theta|y_{old}, y_{new}) = \frac{p(y_{new}|\theta) p(\theta|y_{old})}{\int p(y_{new}|\theta) p(\theta|y_{old}) d\theta}
+\]  
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
 \frametitle{Computation}
 
 We will be using \texttt{R}
@@ -351,3 +359,8 @@ Some bookmarks:
 
 
 \end{document} 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

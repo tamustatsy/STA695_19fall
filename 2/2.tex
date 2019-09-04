@@ -204,14 +204,14 @@ for all $p(\theta) \in \mathcal{P}$ and $p(y \mid \theta) \in \mathcal{F}$.
 beta - binomial:
 \begin{enumerate}
 \item $p(\theta) = [\text{B}(\alpha,\beta)]^{-1} \theta^{\alpha-1}(1-\theta)^{\beta-1}$
-\item $p(y \mid \theta) = \prod_i \theta^{y_i}(1-\theta)^{1-y_i} $
-\item $p(\theta \mid y) \propto \theta^{\sum_i y_i}(1-\theta)^{n-\sum_i y_i}\theta^{\alpha-1}(1-\theta)^{\beta-1}$
+\item $p(y \mid \theta) {\color{red} = } \prod_i \theta^{y_i}(1-\theta)^{1-y_i} $
+\item $p(\theta \mid y) {\color{red} \propto } \theta^{\sum_i y_i}(1-\theta)^{n-\sum_i y_i}\theta^{\alpha-1}(1-\theta)^{\beta-1}$
 \end{enumerate}
 
 % so $\theta \mid y \sim \text{Beta}(\alpha + \sum_i y_i , \beta + n - \sum_i y_i)$, or
 
 \[
-p(\theta \mid y) = \frac{1}{\text{B}(\alpha + \sum_i y_i, \beta + n -
+p(\theta \mid y) {\color{red} = } \frac{1}{\text{B}(\alpha + \sum_i y_i, \beta + n -
   \sum_i y_i)} \theta^{\alpha + \sum_i y_i - 1}(1-\theta)^{\beta +
   n-\sum_i y_i - 1}
 \]
@@ -246,10 +246,10 @@ Instead of $\alpha$ and $\beta$ as prior parameters, the book uses the transform
 \begin{align*}
 &p(\sigma^2 \mid y)\\
 &\propto (\sigma^2)^{-(\nu_0/2+1)} \exp\left( - \frac{\sigma_0^2 \nu_0}{ 2\sigma^2} \right)(\sigma^2)^{-n/2} \exp\left[-\frac{1}{2 \sigma^2} \sum_i \left(y_i - \theta \right)^2 \right] \\
-& \vdots \tag{homework} \\
+& \vdots \tag{Exercise} \\
 &\propto (\sigma^2)^{-(\frac{n + \nu_0}{2}  +1)} \exp\left[-\frac{1}{2 \sigma^2}\left(\nu_0 \sigma^2_0 + n v  \right)  \right]
 \end{align*}
-
+What does prior distribution indicate, in terms of $\alpha$ and $\beta$?
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -266,6 +266,8 @@ gamma-Poisson:
 \end{enumerate}
 
 note the rate parameterization
+
+What does prior distribution indicate, in terms of $\alpha$ and $\beta$?
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -295,7 +297,7 @@ gamma-exponential:
 \item $p(\theta \mid y)  = \text{Gamma}(\alpha + n, \beta + \sum_i y_i)$
 \end{enumerate}
 
-
+What does prior distribution indicate, in terms of $\alpha$ and $\beta$?
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -323,7 +325,7 @@ normal-normal (known variance):
 &p(\theta \mid y) \\
 &\propto \exp\left[-\frac{1}{2 \tau_0^2}(\theta - \mu_0)^2 \right] \prod_i \exp\left[-\frac{1}{2 \sigma^2} \left(y_i - \theta \right)^2 \right] \\
 &= \exp\left[-\frac{1}{2 \tau_0^2}(\theta - \mu_0)^2 \right] \exp\left[-\frac{1}{2 \sigma^2} \sum_i \left(y_i - \theta \right)^2 \right] \\
-&\vdots \tag{homework} \\
+&\vdots \tag{Exercise} \\
 &\propto \exp\left[ - \frac{1}{2 \tau_n^2} (\theta - \mu_n)^2 \right]
 \end{align*}
 
@@ -341,11 +343,13 @@ where $\frac{1}{\tau_n^2} = \frac{n}{\sigma^2} + \frac{1}{\tau_0^2}$ and $\mu_n 
 general exponential families:
 \begin{enumerate}
 \item $p(\theta) \propto g(\theta)^{\eta} \exp\left[\phi(\theta)' \nu \right]$
-\item $p(y \mid \theta) \propto g(\theta)^{n} \exp\left[\phi(\theta)' t(y) \right] $
-\item $p(\theta \mid y) \propto g(\theta)^{\eta + n} \exp\left[\phi(\theta)' \{t(y) + \nu\} \right] $
+\item $p(y \mid \theta) \propto g(\theta)^{n} \exp\left[\phi(\theta)'
+    \sum_{i=1}^n u(y_i) \right] $
+\item $p(\theta \mid y) \propto g(\theta)^{\eta + n}
+  \exp\left[\phi(\theta)' \{t(y) + \nu\} \right] $, where $t(y) = \sum_{i=1}^n u(y_i)$
 \end{enumerate}
 
-
+Recall that $t(y)$ is the sufficient statistic for $\theta$
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -505,9 +509,30 @@ Hopefully our likelihood will stay away from those side peaks.
 \includegraphics[width=80mm]{pics/Rplot2.png}
 \end{center}
 
-
 \end{frame}
 
+\begin{frame}
+  \frametitle{Noninformative Priors when pivotal quantities exist}
+  \begin{itemize}
+  \item $\theta$ is location, $u = y - \theta|\theta \sim f(u)$ is a pivotal quantity\\
+    Goal: $p(y - \theta|y)$ is free of $y$ and $\theta$.\\
+    \[p(y - \theta|y) \propto p(\theta) p(y - \theta|\theta) = p(\theta) f(y - \theta)\]
+    \pause
+    $  \rightarrow p(\theta) \propto c$\\
+    
+   e.g. Normal likelihood with known variance $p(\mu) \propto c$
+   \pause  
+ \item $\theta$ is scale, $ u = (y/\theta) |\theta \sim f(u)$ is a pivotal quantity\\
+   Goal: $p(u = y/\theta |y)$ is free of $y$ and $\theta$.\\
+   \[p(u| \theta) = \theta p(y|\theta)\]
+   \[p(u| y) = p(\theta|y) \theta^2/y
+   \]
+   \pause
+   $\rightarrow p(\theta) \propto \theta^{-1}$\\
+   
+   e.g. Normal likelihood with known mean $p(\sigma) \propto \sigma^{-1}$, \\same as Jeffrey's prior, $p(\sigma^2) \propto \sigma^{-2}$
+  \end{itemize}
+\end{frame}
 
 \end{document} 
 
