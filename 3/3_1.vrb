@@ -1,9 +1,14 @@
-\frametitle{A comparison in R}
+\frametitle{Another multiparameter example of conjugacy: Dirichlet-multinomial}
 
-See \verb|3.r| for details:
+Let $y = (y_1, y_2, \ldots, y_k)$ be a vector of counts. Let $\theta = (\theta_1, \theta_2, \ldots, \theta_k)$ be the probabilities of any trial resulting in each of the $k$ outcomes. We assume that there is a known total count (which means $\sum_i y_i = n$) and that the only possible outcomes are these $k$ outcomes $\sum_i \theta_i = 1$.
+\newline
 
-\begin{center}
-\includegraphics[width=100mm]{pics/Rplot}
-\end{center}
-
-
+The likelihood is a {\bf multinomial} (aka a {\bf categorical}) distribution
+$$
+p(y \mid \theta) \propto \prod_{i=1}^k \theta_i^{y_i},
+$$
+and the prior is a Dirichlet distribution
+$$
+p(\theta) \propto \prod_{i=1}^k \theta_i^{\alpha_i - 1}.
+$$
+The chosen hyper-parameters have a very nice interpretation of counts!
