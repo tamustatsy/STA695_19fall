@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  11 SEP 2019 09:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  11 SEP 2019 17:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -972,12 +972,7 @@ LaTeX Font Info:    Try loading font information for U+bbold on input line 10.
 \openout4 = `3_2.vrb'.
 
 
-(./3_2.vrb
-Overfull \hbox (7.46663pt too wide) detected at line 10
-[]
- []
-
-) [12
+(./3_2.vrb) [12
 
 ]
 \tf@nav=\write6
@@ -1017,7 +1012,7 @@ local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr
 /local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/
 local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/l
 ocal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on 3_2.pdf (12 pages, 135174 bytes).
+Output written on 3_2.pdf (12 pages, 135203 bytes).
 PDF statistics:
  395 PDF objects out of 1000 (max. 8388607)
  355 compressed objects within 4 object streams

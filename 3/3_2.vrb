@@ -1,15 +1,15 @@
 \frametitle{Multivariate Normal Observations with unknown covariance matrix}
 
-Now $p(\Sigma|\mu, y)$. Denote $S = \sum_i (y_i - \bar{y})(y_i -
+Now $p(\Sigma|y)$. Denote $S = \sum_i (y_i - \bar{y})(y_i -
   \bar{y})^T$
 
 \begin{align*}
-p(\Sigma|\mu, y) \propto &\mbox{det}(\Sigma)^{-(\nu_0 + n + d + 1)/2}
+p(\Sigma|y) \propto &\mbox{det}(\Sigma)^{-(\nu_0 + n + d + 1)/2}
   \\
   &\exp\left(-\frac{1}{2} \text{tr}\left[\Lambda_0 \Sigma^{-1} + S \Sigma^{-1} + \frac{\kappa_0 n}{\kappa_0 + n} (\bar{y} - \mu_0)(\bar{y} - \mu_0)^T \Sigma^{-1}\right] \right)
 \end{align*}
 
-$p(\Sigma|\mu, y) \sim \mbox{Inv-Wishart}_{\nu_n}(\Lambda_n)$
+$p(\Sigma|y) \sim \mbox{Inv-Wishart}_{\nu_n}(\Lambda_n^{-1})$
 
 $\nu_n = \nu_0 + n$
 
