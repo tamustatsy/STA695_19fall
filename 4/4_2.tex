@@ -1,0 +1,259 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{amsfonts}
+\usepackage{mathrsfs, bbold}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{mathtools} % gather
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title["4"]{4: Asymptotic and connections to non-Bayesian approaches}
+
+% \author{Taylor} 
+% \institute[UVA] 
+% {
+% University of Virginia \\
+% \medskip
+% \textit{} 
+% }
+\date{09/18/19} 
+
+\begin{document}
+%----------------------------------------------------------------------------------------
+
+\begin{frame}
+\titlepage 
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+
+We go through some common examples where one of the above assumptions is not met. In these cases, using asymptotics is not allowed.
+
+\end{frame}
+
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+
+A *model* is {\bf underidentified} given data $y$ if the likelihood, $p(y \mid \theta)$, is equal for a range of values $\theta$. 
+\newline
+
+A *model* is {\bf weakly identified} given data $y$ if the likelihood, $p(y \mid \theta)$, is close to being equal for a range of values $\theta$. 
+\newline
+
+These can be problematic because $\hat{\theta}$ will not have any specific number/vector $\theta$ to which it can converge. These are violations of assumption (3).
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+
+\[
+\left[\begin{array}{c}
+u \\
+v
+\end{array}\right]
+\bigg|
+\rho
+\sim
+\text{Normal}\left( 
+\left[\begin{array}{c}
+0 \\
+0
+\end{array}\right]
+,
+\left[\begin{array}{cc}
+1 & \rho \\
+\rho & 1
+\end{array}\right]
+\right)
+\]
+If $v$ is latent/hidden, then we work with the marginal likelihood $p(u \mid \rho)$:
+\[
+u \mid \rho \sim \text{Normal}\left(0, 1 \right)
+\]
+Notice that this is free of $\rho$! 
+\[
+p(\rho \mid u) \propto p(u \mid \rho) p(\rho) \propto p(\rho)
+\]
+Here we say the *parameter* is {\bf nonidentified}.
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+
+Sometimes it is harder to spot nonidentifiable parameters. It may be the case that $p(y \mid \theta)$ yields the same function in $y$ for two different values of $\theta$. If this is true, then for any particular data set $y$, $p(y \mid \theta)$ will be equal for these two values of $\theta$.
+\newline
+
+Example $y \mid \theta \sim \text{Normal}(0, \theta^2)$. Then $p(y \mid \theta) = p(y \mid -\theta)$!
+\newline
+
+We can fix this easily by restricting the parameter space. The model is no longer underidentified if $\theta \in \mathbb{R}^+$. When this happens, we call this problem {\bf aliasing}.
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+
+Another example of {\bf aliasing}. If you look at a histogram of $y$ and it's bimodal, then a possibly suitable model is the {\bf normal mixture model}:
+
+\begin{align*}
+&p(y_i \mid \mu_1, \mu_2, \sigma_1^2, \sigma_2^2, \lambda) \\
+= \lambda &\frac{1}{\sqrt{2\pi \sigma_1^2}} \exp\left[-\frac{1}{2 \sigma_1^2}(y_i - \mu_1)^2 \right] \\
++ (1-\lambda) &\frac{1}{\sqrt{2\pi \sigma_2^2}}\exp\left[-\frac{1}{2 \sigma_2^2}(y_i - \mu_2)^2 \right]
+\end{align*}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+
+{\bf Unbounded likelihoods} might also be a problem. Assume 
+\[
+p(y \mid \sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}\exp\left[ -\frac{y^2}{2 \sigma^2} \right].
+\]
+If $y=0$, then this simplifies to
+\[
+p(y \mid \sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}
+\]
+which goes to $\infty$ as $\sigma^2 \to 0$. The theoretical probablity of you getting $y=0$ is obviously $0$, but it is possible to get $0$s computationally if you have an {\bf underflow} problem. Double precision floating point numbers give you about 15-17 digits of precision. 
+
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: cases of unmet assumptions}
+\begin{itemize}
+\item Improper posterior distributions
+\[  
+   y \sim \mbox{Binomial}(n, p), p \sim \mbox{Beta}(0, 0)
+\]
+\[
+  p \mid y  \propto p^{y-1}(1 - p)^{n-y-1}
+\]
+$Pr(p \mid 0)$ or $Pr(p \mid n)$ is improper! 
+\item Prior distributions that exclude $\theta_0$
+\item Convergence to the edge of parameter space, $\theta_0
+  \in \partial\Theta$
+\item Tails of the distribution is less accurate  
+\end{itemize}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Asymptotic Normality: difficulty in high dimension}
+
+The number of parameters increases with the sample size, the standard
+asymptotics won't apply. 
+
+\begin{itemize}
+\item Consistency is hard to obtain (not impossible though): prior
+  distribution plays a much bigger role; the sample size is not big
+  in each dimension of $\theta$
+\item Normal approximation is of high dimension
+\item Asymptotic normality is not efficient even if we can
+\end{itemize}
+
+% For example, if $p(y_i \mid \theta_i)$ is the likelihood, and $\theta_i$ is a different parameter for each datum. 
+
+It makes more sense to consider other asymptotic properties
+(consistency, convergence rates) instead by putting restriction on
+$\theta_0$ and the prior as well.
+
+When the number of parameter is large, hierarchical prior is preferred
+since then their common distribution can be estimated from data.
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Frequency evaluations of Bayesian inferences}
+  \begin{itemize}
+  \item Large sample correspondence, $\hat{\theta}$, MLE
+\[
+ (n J(\hat{\theta}))^{-1}(\theta - \hat{\theta}) |
+ y \sim N(0, I)
+\]
+\[
+(n J(\theta_0))^{-1}(\hat{\theta} - \theta_0) |
+ \theta_0 \sim N(0, I)
+\]
+$\Rightarrow$ Bayesian posterior credible interval is asymptotically
+the same as confidence interval in repeated sampling 
+ \item Consistency/ Asymptotic unbiasedness/ Asymptotic efficiency of point estimate
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "4_2"
+%%% End:
