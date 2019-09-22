@@ -1,0 +1,198 @@
+\documentclass[compress]{beamer}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage[english]{babel}
+\usepackage{subfigure}
+\usepackage{verbatim}
+
+
+\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{10pt}}{\enditemize}
+
+\mode<presentation>
+{
+\usetheme{UK}
+\setbeamercovered{transparent = 28}
+}
+
+\def\vec#1{\mathchoice{\mbox{\boldmath$\displaystyle\bf#1$}}
+{\mbox{\boldmath$\textstyle\bf#1$}}
+{\mbox{\boldmath$\scriptstyle\bf#1$}}
+{\mbox{\boldmath$\scriptscriptstyle\bf#1$}}}
+
+
+
+
+\title{Investigate $p(\mu,\sigma^2|y_{new},y_{old})$}
+\subtitle{STA 695: In-class Discussion}
+\author{Zi Ye}\institute{}
+\date{September 18, 2019}
+
+
+\begin{document}
+
+{
+\begin{withoutheadline}
+	\begin{frame}
+        \titlepage
+    \end{frame} 
+\end{withoutheadline}
+} 
+
+
+% ----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Univariate Normal with unknown mean and variance}
+Likelihood
+\[
+p(y \mid \mu, \sigma^2) = (\sigma^2)^{-n/2} \exp\left[ - \frac{1}{2\sigma^2}\left\{(n-1)  s^2 + n(\bar{y} - \mu)^2 \right\} \right]
+\]
+Prior
+\[p(\mu, \sigma^2) = p(\sigma^2) p(\mu|\sigma^2) = \mbox{inv-gamma}(\nu_0/2, \sigma_0^2\nu_0/2) \mbox{N}(\mu_0, \sigma^2/\kappa_0)
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Univariate Normal with unknown mean and variance}
+  Posterior
+\begin{align*}
+  p(\mu, \sigma^2|y) = p(\sigma^2|y) p(\mu|\sigma^2,y) &= \mbox{inv-gamma}(\nu_n/2, \sigma_n^2\nu_n/2) \mbox{N}(\mu_n, \sigma^2/\kappa_n)\\
+  &=\mbox{inverse-}\chi^2(\nu_n, \sigma_n^2) \mbox{N}(\mu_n, \sigma^2/\kappa_n)
+\end{align*}
+where
+\begin{align*}
+\mu_n &= \frac{\kappa_0}{\kappa_0+n}\mu_0+\frac{n}{\kappa_0+n}\bar{y}\\
+\kappa_n &=\kappa_0+n\\
+\nu_n &= \nu_0+n\\
+\nu_n\sigma^2_n & = \nu_0\sigma_0^2+(n-1)s^2+\frac{\kappa_0 n}{\kappa_0 +n}(\bar{y}-\mu_0)^2.
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Investigate $p(\mu,\sigma^2|y_{new},y_{old})$}
+
+Suppose we have two data sets $y_{old}=(y_1^1,\ldots,y_{n_1}^1)$ and $y_{new}=(y_1^2,\ldots,y_{n_2}^2)$, with sample size $n_1$ and $n_2$, respectively.
+\begin{align*}
+\bar{y}_1&= \frac{1}{n_1}\sum y_i^1, & s_1^2 & = \frac{1}{n_1-1}\sum (y_i^1-\bar{y}_1)^2, \\
+\bar{y}_2&=  \frac{1}{n_2}\sum y_i^2, & s_2^2 & = \frac{1}{n_2-1}\sum (y_i^2-\bar{y}_2)^2.
+\end{align*}
+
+With conjugate prior 
+\[p(\mu, \sigma^2) = p(\sigma^2) p(\mu|\sigma^2) = \mbox{inv-gamma}(\nu_0/2, \sigma_0^2\nu_0/2) \mbox{N}(\mu_0, \sigma^2/\kappa_0)
+\]
+
+Want to find
+$$
+p(\mu,\sigma^2|y_{new},y_{old})
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach One }
+Combine $y_{new}$ and $y_{old}$ as $y$ and calculate posterior directly.
+
+From previous results, we have
+\begin{align*}
+p(\mu,\sigma^2|y_{new},y_{old})&=p(\mu,\sigma^2|y)\\
+&=\mbox{inv-gamma}(\nu_n/2, \sigma_n^2\nu_n/2) \mbox{N}(\mu_n, \sigma^2/\kappa_n)
+\end{align*}
+where
+\begin{align*}
+\mu_n &= \frac{\kappa_0}{\kappa_0+n}\mu_0+\frac{n}{\kappa_0+n}\bar{y}\\
+\kappa_n &=\kappa_0+n\\
+\nu_n &= \nu_0+n\\
+\nu_n\sigma^2_n & = \nu_0\sigma_0^2+(n-1)s^2+\frac{\kappa_0 n}{\kappa_0 +n}(\bar{y}-\mu_0)^2.
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach One}
+Since 
+\begin{align*}
+\bar{y} &= \frac{n_1}{n_1+n_2}\bar{y}_1+\frac{n_2}{n_1+n_2}\bar{y}_2\\
+(n-1)s^2 &=\sum^n_{i=1}(y_i-\bar{y})^2\\
+&=\sum^{n_1}_{i=1}(y_i^1-\bar{y}_1+\bar{y}_1-\bar{y})^2+\sum^{n_2}_{i=1}(y_i^2-\bar{y}_2+\bar{y}_2-\bar{y})^2\\
+&=(n_1-1)s_1^2+(n_2-1)^2s_2^2+n_1(\bar{y}_1-\bar{y})^2+n_2(\bar{y}_2-\bar{y})^2\\
+&=(n_1-1)s_1^2+(n_2-1)^2s_2^2+\frac{n_1n_2}{n_1+n_2}(\bar{y}_1-\bar{y}_2)^2
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach One}
+We have
+\begin{align*}
+\mu_n 
+=&\frac{\kappa_0}{\kappa_0+n_1+n_2}\mu_0+\frac{n_1}{\kappa_0+n_1+n_2}\bar{y}_1+\frac{n_2}{\kappa_0+n_1+n_2}\bar{y}_2\\
+\kappa_n =&\kappa_0+n_1+n_2\\
+\nu_n =& \nu_0+n_1+n_2\\
+\nu_n\sigma^2_n  = &\nu_0\sigma_0^2+(n-1)s^2+\frac{\kappa_0 n}{\kappa_0 +n}(\bar{y}-\mu_0)^2\\
+ =& \nu_0\sigma_0^2+(n_1-1)s_1^2+(n_2-1)s_2^2\\
+&+\frac{(\kappa_0+n_2)n_1}{\kappa_0+n_1+n_2}(\bar{y}_1-\mu_0)^2+\frac{(\kappa_0+n_1)n_2}{\kappa_0+n_1+n_2}(\bar{y}_2-\mu_0)^2\\
+&-\frac{2n_1n_2}{\kappa_0+n_1+n_2}(\bar{y}_1-\mu_0)(\bar{y}_2-\mu_0).
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach Two }
+Use the posterior $p(\mu, \sigma^2|y_{old})$ to calculate $p(\mu, \sigma^2|y_{old},y_{new})$.
+
+We have known that 
+\[
+p(\theta|y_{old},y_{new})=\frac{p(y_{new}|\theta)p(\theta|y_{old})}{\int p(y_{new}|\theta)p(\theta|y_{old})d\theta} \propto p(y_{new}|\theta)p(\theta|y_{old})
+\]
+\[
+p(y_{new} \mid \mu, \sigma^2) = (\sigma^2)^{-n/2} \exp\left[ - \frac{1}{2\sigma^2}\left\{(n-1)  s_2^2 + n(\bar{y}_2 - \mu)^2 \right\} \right]
+\]
+\[p(\mu, \sigma^2|y_{old}) = \mbox{inv-gamma}(\nu_1/2, \sigma_1^2\nu_1/2) \mbox{N}(\mu_1, \sigma^2/\kappa_1)
+\]
+where
+\begin{align*}
+\mu_1 &= \frac{\kappa_0}{\kappa_0+n_1}\mu_0+\frac{n_1}{\kappa_0+n_1}\bar{y}_1, \kappa_1 =\kappa_0+n_1, \nu_1 = \nu_0+n_1\\
+\nu_1\sigma^2_1 & = \nu_0\sigma_0^2+(n_1-1)s_1^2+\frac{\kappa_0 n_1}{\kappa_0 +n_1}(\bar{y}_1-\mu_0)^2.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach Two}
+Because the conjugacy, we can regard $p(\mu, \sigma^2|y_{old})$ as a new prior for $y_{old}$ and use the results for posterior distribution. Then
+\[
+p(\mu,\sigma^2|y_{new},y_{old})=\mbox{inv-gamma}(\tilde{\nu}_n/2, \tilde{\sigma}_n^2\tilde{\nu}_n/2) \mbox{N}(\tilde{\mu}_n, \sigma^2/\tilde{\kappa}_n)
+\]
+where
+\begin{align*}
+\tilde{\mu}_n &= \frac{\kappa_1}{\kappa_1+n_2}\mu_1+\frac{n_2}{\kappa_1+n_2}\bar{y}_2\\
+\tilde{\kappa}_n &=\kappa_1+n_2\\
+\tilde{\nu}_n &= \nu_1+n_2\\
+\tilde{\nu}_n\tilde{\sigma}^2_n & = \nu_1\sigma_1^2+(n_2-1)s_2^2+\frac{\kappa_1 n_2}{\kappa_1 +n_2}(\bar{y}_2-\mu_1)^2.
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach Two}
+\begin{align*}
+\tilde{\mu}_n 
+=&\frac{\kappa_0}{\kappa_0+n_1+n_2}\mu_0+\frac{n_1}{\kappa_0+n_1+n_2}\bar{y}_1+\frac{n_2}{\kappa_0+n_1+n_2}\bar{y}_2=\mu_n\\
+\tilde{\kappa}_n =&\kappa_0+n_1+n_2=\kappa_n\\
+\tilde{\nu}_n =& \nu_0+n_1+n_2=\nu_n
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Approach Two}
+\begin{align*}
+\tilde{\nu}_n\tilde{\sigma}^2_n  = &\nu_0\sigma_0^2+(n_1-1)s_1^2+\frac{\kappa_0 n_1}{\kappa_0 +n_1}(\bar{y}_1-\mu_0)^2+(n_2-1)s_2^2\\
+&+\frac{\kappa_1 n_2}{\kappa_1 +n_2}(\bar{y}_2-\mu_1)^2\\
+=& \nu_0\sigma_0^2+(n_1-1)s_1^2+(n_2-1)s_2^2+\frac{\kappa_0 n_1}{\kappa_0 +n_1}(\bar{y}_1-\mu_0)^2\\
+&+\frac{n_2}{(\kappa_0+n_1+n_2)(\kappa_0+n_1)}[(\kappa_0+n_1)(\bar{y}_2-\mu_0)-n_1(\bar{y}_1-\mu_0)]^2\\
+ =& \nu_0\sigma_0^2+(n_1-1)s_1^2+(n_2-1)s_2^2\\
+&+\frac{(\kappa_0+n_2)n_1}{\kappa_0+n_1+n_2}(\bar{y}_1-\mu_0)^2+\frac{(\kappa_0+n_1)n_2}{\kappa_0+n_1+n_2}(\bar{y}_2-\mu_0)^2\\
+&-\frac{2n_1n_2}{\kappa_0+n_1+n_2}(\bar{y}_1-\mu_0)(\bar{y}_2-\mu_0)=\mu_n\sigma^2_n.
+\end{align*}
+\end{frame}
+
+\end{document}
+
