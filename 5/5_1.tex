@@ -1,0 +1,319 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{amsfonts}
+\usepackage{mathrsfs, bbold}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{mathtools} % gather
+
+\def\boldsymbol{\sbf}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title["5"]{5: Hierarchical models}
+
+% \author{Taylor} 
+% \institute[UVA] 
+% {
+% University of Virginia \\
+% \medskip
+% \textit{} 
+% }
+\date{09/23/19} 
+
+\begin{document}
+%----------------------------------------------------------------------------------------
+
+\begin{frame}
+\titlepage 
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Introduction}
+
+On the one hand, we can assume that our data are iid, conditional on one parameter. On the other hand, we can assume that each data point gets its own parameter. The former might be too inflexible, while the latter might be too flexible, leading too overfitting.
+\newline
+
+Hierarchical models are a good ``in between" option that allows each data point to get its own parameter; however, these parameters are ``tied together" in a certain sense.
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Rat tumor example}
+
+\begin{enumerate}
+\item $j=1,2,\ldots,71$ groups/experiments
+\item $\theta_j$ is the probability of any rat getting a tumor in experiment $j$
+\item $\theta_j$ are all different because of rat and/or experimental differences
+\item $y_j$ is the count of rats with tumors in experiment $j$ (out of $n_j$ total rats)
+\item $y_j \mid \theta_j, n_j \sim \text{Binomial}(n_j, \theta_j)$ exchangeable
+\item $\theta_j \overset{\text{iid}}{\sim} \text{Beta}(\alpha,\beta)$ 
+\end{enumerate}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Rat tumor example}
+
+\begin{center}
+\includegraphics[width=120mm]{hierarchical_structure.png}
+\end{center}
+
+\end{frame}
+
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Rat tumor example}
+
+Consider groups $1, \ldots, 70$ as historical data. We are interested specifically in $\theta_{71}$.
+\newline
+
+Naive approach: only choose $\text{Beta}(\alpha,\beta)$ prior for $\theta_{71}$. Choose $\alpha,\beta$ based on historical data $y_1, \ldots, y_{71}$, but in an ad hoc way, by setting the prior mean to be the empirical mean, and the prior variance equal to the sample variance. I.e. by solving
+\[
+\left[\begin{array}{c}
+\hat{p} = 70^{-1}\sum_{i=1}^{70} y_j/n_j \\
+70^{-1}\sum_{i=1}^{70} (y_j/n_j - \hat{p})^2
+\end{array}\right]
+=
+\left[\begin{array}{c}
+\alpha/(\alpha+\beta) \\
+\alpha \beta / \{(\alpha+\beta)^2(\alpha + \beta + 1) \}
+\end{array}\right]
+\]
+
+You end up with $(\alpha,\beta) = (1.4, 8.6)$. Then, because $(y_{71},n_{71}) = (4,14)$,
+\[
+\theta_{71} \mid y_{71} \sim \text{Beta}(5.4, 18.6)
+\]
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Rat tumor example}
+
+The above approach is called {\bf empirical Bayes}. Problems with this approach:
+
+\begin{enumerate}
+\item can't really make inferences on $\theta_1, \ldots, \theta_{70}$ unless you ``use the data twice"
+\item how do we know we used the right point estimates for prior
+  construction? The point estimates ignores uncertainty
+\item Should $\alpha$, $\beta$ be estimated? They are part of prior
+  distributions on $\theta_{71}$ and thus not necessarily be known.
+\end{enumerate}
+
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Exchangeability in the prior}
+
+Why do we use exchangeable priors?
+\newline
+
+Q: If someone told you $\theta_1 = .2, \theta_2 =.3$, would you react differently than if they told you $\theta_2 = .2, \theta_1 =.3$?
+\pause
+\newline
+
+A1: ``No, I don't know anything about these labs, so it's all the same to me." 
+\newline
+This means $p(\theta_{1:71})$ should be chosen to be exchangeable.
+\newline
+
+
+A2: ``Yes, the second one is rarer a priori. I think $\theta_1$ should be higher because the first lab sources their rats from NYC subways, and the second sources theirs from DC subways." 
+\newline
+
+This means $p(\theta_{1:71})$ should not be chosen to be exchangeable.
+
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Exchangeability in the prior}
+For many examples, no information other
+than the observations $y$ is available to distinguish any of the
+$\theta_j$ from any of the others for all $j = 1,\ldots, J$. 
+
+\vspace{0.3cm}
+Assume exchangeability in $y$. It is natural to assume exchangeability
+in $\theta$.
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Exchangeability in the prior}
+
+Let's say we assume exchangeability. How can we pick a prior?
+\newline
+
+Option 1: iid (not a hierarchical model)
+\[
+p(\theta_{1:J}) = \prod_{i=1}^{J} p(\theta_{i})
+\]
+Does your opinion about $\theta_1$ change if we knew $\theta_2$? If yes, this isn't appropriate.
+\newline
+
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Exchangeability in the prior}
+Option 2: Simplest form of hierarchical exchangeable distribution 
+\[
+p(\theta \mid \phi) = \prod_{j=1}^J p(\theta_j \mid \phi)
+\]
+
+In general $\phi$ is unknown, we assume $\phi \sim p(\phi)$ 
+\[
+p(\theta) = \int \bigg(\prod_{j=1}^J p(\theta_j \mid \phi)\bigg)
+p(\phi) d\phi
+\]  
+
+E.g. $\theta_i$ and $\theta_j$ are positively correlated. 
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Exchangeability in the prior}
+If observations are not fully exchangeable, but are {\it partially} or
+{\it conditionally} exchangeable:
+
+\begin{itemize}
+\item Partially exchangeable: observations are grouped, group
+  properties $\theta_i$ are assumed to be exchangeable
+\item Conditionally exchangeable: additional information is passed
+  along with $y_i$, say $x_i$, $(y_i, x_i)$ are exchangeable
+ 
+  $\theta_i$: a joint model for $(y_i, x_i)$ or a conditional model for $y_i \mid x_i$  
+\end{itemize}
+Option 3: 
+\[
+p(\theta \mid x) = \int \bigg(\prod_{j=1}^J p(\theta_j \mid \phi, x_i)\bigg)
+p(\phi \mid x) d\phi
+\]  
+
+$x = (x_1, \ldots, x_J)$
+
+In rat tumor example, $n_i$ can be treated as $x_i$ and prior
+dependence is dropped because there is no indication that $y_i/n_i$ is
+closely related to $n_i$ 
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Rat tumor example -- A full Bayesian approach}
+
+A ``better" way:
+\begin{enumerate}
+\item choose (hyper)prior $p(\alpha,\beta)$ 
+\item choose prior $p(\theta_{1:71} \mid \alpha, \beta)$
+\item choose likelihood $p(y \mid \theta_{1:71}, \alpha, \beta) = p(y \mid \theta_{1:71}) = \prod_{j=1}^{71}p(y_j \mid \theta_{j})$
+\end{enumerate}
+
+Then 
+\begin{align*}
+p(\theta_{1:71}, \alpha, \beta \mid y) &\propto p(y \mid \theta_{1:71}, \alpha, \beta)p(\theta_{1:71} \mid \alpha,\beta)p(\alpha,\beta) \tag{Bayes'} \\
+&= p(y \mid \theta_{1:71} )p(\theta_{1:71} \mid \alpha, \beta)p(\alpha,\beta) \tag{condtl. indep.} 
+\end{align*}
+
+Question: how do we draw simulations from the above posterior distribution?
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Posterior Predictive Distributions: two choices}
+
+If you want the predictive distribution of new rat counts ($\tilde{y}_{54}$) in an old/existing experiment (say $j=54$), then you can use
+\[
+p(\tilde{y}_{54} \mid y) = \int p(\tilde{y} \mid \theta_{54})
+{\color{blue} p(\theta_{54} \mid y)}x \text{d}\theta_{54}
+\]
+
+If you want the probability distribution of future rat counts ($\tilde{y}_{72}$) in a future experiment (say $j=72$) coming from the same ``superpopulation", you can use
+\[
+p(\tilde{y}_{72} \mid y) = \iiint p(\tilde{y}_{72} \mid
+\theta_{72})p(\theta_{72} \mid \alpha, \beta) {\color{blue} p(\alpha,\beta \mid y)} \text{d}\theta_{72}\text{d}\alpha \text{d}\beta
+\]
+
+Both strategies are based on the same decomposition, but the second way simulates twice.
+\end{frame}
+
+
+\end{document} 
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
