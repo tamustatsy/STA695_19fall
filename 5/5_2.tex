@@ -1,0 +1,325 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{amsfonts}
+\usepackage{mathrsfs, bbold}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{mathtools} % gather
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title["5"]{5: Hierarchical models}
+
+% \author{Taylor} 
+% \institute[UVA] 
+% {
+% University of Virginia \\
+% \medskip
+% \textit{} 
+% }
+\date{09/25/19} 
+
+\begin{document}
+%----------------------------------------------------------------------------------------
+
+\begin{frame}
+\titlepage 
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Hierarchical model}
+  \begin{enumerate}
+\item choose (hyper)prior $p(\phi)$ 
+\item choose prior $p(\theta \mid \phi)$ --- exchangeable regarding $\theta$
+\item choose likelihood $p(y \mid \theta) = \prod_{j=1}^{J}p(y_j \mid \theta_{j})$
+\end{enumerate}
+
+Then 
+\begin{align*}
+p(\theta, \phi \mid y) \propto p(y \mid \theta)p(\theta \mid \phi)p(\phi) 
+\end{align*}
+
+Question: how do we draw simulations from the above posterior distribution?
+
+\end{frame}
+% ----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Bayesian analysis of conjugate hierarchical models}
+  Suppose $p(\theta \mid \phi)$ is conjugate to $p(y \mid \theta)$ 
+  \begin{itemize}
+  \item Determine $p(\theta \mid y, \phi)$ in closed form
+  \item Determine $p(\phi \mid y)$ (up to normalizing constant) 
+  \end{itemize}
+
+  Drawing simulations from $p(\theta, \phi \mid y)$ according to
+
+  \pause
+  For $i = 1, \ldots, L$
+  \begin{enumerate}
+  \item Draw the vector of hyperparameters, $\phi$, from $p(\phi \mid y)$, by selecting discretized grid using Chapter 3 or more sophisticated methods in Part III of the book
+  \pause
+\item Draw the parameter vector $\theta$, from $p(\theta \mid y, \phi)$. If $p(\theta \mid \phi)$ is facterized (conditionally independent of $\phi$), then the components of $\theta$ can be drawn independently 
+  \pause
+\item Draw predicted value $\tilde{y}_j$, from $p(y_j \mid \theta_j)$; If $\tilde{y}$ might corresponds to new $\theta$ values other than the existing ones, draw $\tilde{\theta}$, from $p(\theta \mid \phi)$, then draw $\tilde{y}$, from $p(y \mid \tilde{\theta})$ 
+\end{enumerate}  
+\end{frame}
+
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+We choose the prior $p(\theta_{1:71} \mid \alpha, \beta)p(\alpha, \beta)$. Section 5.3 is mostly interested in the marginal posterior $p(\alpha, \beta \mid y)$. 
+\newline
+
+1. determine the conditional posterior in *closed form* $p(\theta_{1:71} \mid y, \alpha, \beta)$. 
+\newline
+\pause
+
+2. determine the *unnormalized* version of the marginal posterior using the following formula
+\begin{align*}
+p(\alpha, \beta \mid y) &= \frac{p(\theta_{1:71}, \alpha, \beta  \mid y) }{p(\theta_{1:71} \mid y, \alpha, \beta) } \\
+&\propto \frac{p(y \mid \theta_{1:71})p(\theta_{1:71} \mid \alpha, \beta)p(\alpha, \beta) }{p(\theta_{1:71} \mid y, \alpha, \beta) }
+\end{align*}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+1. determine the conditional posterior in *closed form* $p(\theta_{1:71} \mid y, \alpha, \beta)$. We assume $\theta_{1:71} \mid \alpha, \beta \sim \text{Beta}(\alpha,\beta)$. Reminder: when we write $\propto$ we can drop anything that isn't a $\theta_{1:71}$.
+
+\begin{align*}
+p(\theta_{1:71} \mid y, \alpha, \beta) &\propto p(y \mid \theta_{1:71})p(\theta_{1:71} \mid \alpha, \beta)\\
+&\propto \prod_{j=1}^{71} \theta_j^{\alpha-1}(1-\theta_j)^{\beta-1} \\
+&\times \prod_{j=1}^{71}\theta_j^{y_j}(1-\theta_j)^{n_j - y_j} \\
+&= \prod_{j=1}^{71}\theta_j^{y_j+\alpha-1}(1-\theta_j)^{n_j - y_j + \beta-1}
+\end{align*}
+So $p(\theta_{1:71} \mid y, \alpha, \beta) = \prod_{j=1}^{71}\text{Beta}(\alpha + y_j, \beta + n_j - y-j)$
+
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+2. determine the *unnormalized* version of the marginal posterior using the following formula. When we write $\propto$, we can drop anything that isn't involving $\alpha, \beta$.
+
+\begin{align*}
+p(\alpha, \beta \mid y) &\propto \frac{p(y \mid \theta_{1:71})p(\theta_{1:71} \mid \alpha, \beta)p(\alpha, \beta) }{p(\theta_{1:71} \mid y, \alpha, \beta) } \tag{earlier slides} \\
+&\propto \frac{p(\theta_{1:71} \mid \alpha, \beta)p(\alpha, \beta) }{ \prod_{j=1}^{71}\frac{\Gamma(n_j + \alpha + \beta )}{ \Gamma(y_j+\alpha)\Gamma(n_j - y_j + \beta) }\theta_j^{y_j+\alpha-1}(1-\theta_j)^{n_j - y_j + \beta-1} } \\
+&= \frac{ p(\alpha, \beta) \prod_{j=1}^{71} \frac{\Gamma(\alpha + \beta )}{ \Gamma(\alpha)\Gamma( \beta) } \theta_j^{\alpha-1}(1-\theta_j)^{\beta-1}  }{ \prod_{j=1}^{71}\frac{\Gamma(n_j + \alpha + \beta )}{ \Gamma(y_j+\alpha)\Gamma(n_j - y_j + \beta) }\theta_j^{y_j+\alpha-1}(1-\theta_j)^{n_j - y_j + \beta-1} } \\
+&\propto p(\alpha, \beta) \prod_{j=1}^{71} \frac{\Gamma(\alpha + \beta )}{ \Gamma(\alpha)\Gamma( \beta) } \bigg/ \frac{\Gamma(n_j + \alpha + \beta )}{ \Gamma(y_j+\alpha)\Gamma(n_j - y_j + \beta) } 
+\end{align*}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+\[
+p(\alpha, \beta \mid y) \propto (\alpha + \beta)^{-5/2} \prod_{j=1}^{71} \frac{\Gamma(\alpha + \beta )}{ \Gamma(\alpha)\Gamma( \beta) } \bigg/ \frac{\Gamma(n_j + \alpha + \beta )}{ \Gamma(y_j+\alpha)\Gamma(n_j - y_j + \beta) }
+\]
+so
+\begin{align*}
+&\log p(\alpha, \beta \mid y) \\
+&= c +  \sum_{j=1}^{71} \left\{ \log  \frac{\Gamma(\alpha + \beta )}{ \Gamma(\alpha)\Gamma( \beta) } - \log \frac{\Gamma(n_j + \alpha + \beta )}{ \Gamma(y_j+\alpha)\Gamma(n_j - y_j + \beta) } \right\} - \frac{5}{2} \log (\alpha + \beta)\\
+\end{align*}
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+Missing $- \frac{5}{2} \log (\alpha + \beta)$?
+\begin{verbatim}
+A <- seq(0.5, 6, length.out = 100)
+B <- seq(3, 33, length.out = 100)
+cA <- rep(A, each = length(B))
+cB <- rep(B, length(A))
+lpfun <- function(a, b, y, n) log(a+b)*(-5/2) +
+  sum(lgamma(a+b)-lgamma(a)-lgamma(b)
+  +lgamma(a+y)+lgamma(b+n-y)-lgamma(a+b+n))
+lp <- mapply(lpfun, cA, cB, MoreArgs = list(y, n))
+\end{verbatim}
+
+
+\url{http://avehtari.github.io/BDA_R_demos/demos_ch5/demo5_1.html}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+So then we exponentiate. But watch out: 
+\begin{verbatim}
+> head(lp)
+[1] -747.6954 -747.6320 -747.8540 -748.3062 -748.9466 -749.7425
+> head(exp(lp))
+[1] 0 0 0 0 0 0
+\end{verbatim}
+\pause
+
+This is {\bf numerical underflow}. Solution:
+\[
+p(\alpha, \beta \mid y) \propto \exp[\log p(\alpha, \beta \mid y) + m]
+\]
+\verb|m| is any ``big" number. Careful not to set it too large, because then you will get {\bf overflow}. The author uses a good data-dependent solution: set \verb|m| to be equal to be negative of the maximum of these log-values, which is $\log p(\alpha, \beta \mid y)$. 
+
+\end{frame}
+
+
+% ----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Prior $p(\alpha, \beta)$}
+  A noninformative hyperprior is desired. Consider ``uniform" distribution on the reparameterized hyperparameters
+
+  \begin{itemize}
+  \item  $(\log(\alpha/\beta), \log(\alpha + \beta)) \in (-\infty, \infty)^2$, which correspond to logit mean and the logarithm of the ``sample size" in the Beta prior
+  \item $(\alpha/(\alpha + \beta), (\alpha + \beta)^{-1/2}) \in (0,1) \times (0, \infty)$, which correspond to mean and standard deviation () in the Beta prior   
+  \end{itemize}
+
+  \vspace{0.2cm}
+  The first choice leads to improper posterior distribution because $p(\alpha, \beta \mid y)$ is unbounded when $(\alpha + \beta) \rightarrow \infty$. Setting a weakly informative prior, $\mbox{uniform}[-10^{10}, 10^{10}] \times [-10^{10}, 10^{10}]$ would not be acceptable!
+
+    \vspace{0.2cm}
+  The second choice leads to $p(\alpha, \beta) \propto (\alpha + \beta)^{-5/2}$ or $p(\log(\alpha/\beta), \log(\alpha + \beta)) \propto (\alpha + \beta)^{-5/2} \alpha \beta$.
+\end{frame}
+
+
+
+% ----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Results}
+  \begin{itemize}
+  \item  Behavior of the posterior mean and credible interval of $\theta_j$
+    \item Comparison of full Bayesian and empirical Bayesian
+\end{itemize}
+\end{frame}
+
+
+% %----------------------------------------------------------------------------------------
+% \begin{frame}[fragile]
+% \frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+% \begin{center}
+% \includegraphics[width=110mm]{marg_posterior.png}
+% \end{center}
+% from \url{http://avehtari.github.io/BDA_R_demos/demos_ch5/demo5_1.html}
+% \end{frame}
+
+
+% %----------------------------------------------------------------------------------------
+% \begin{frame}[fragile]
+% \frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+% Note that this plot is of the *unnormalized* marginal density. We do not know the normalizing constant!
+% \newline
+
+% They approximate the normalized density by making $p(\alpha,\beta \mid y)$ a discrete distribution defined on a grid (recall \verb|A| and \verb|B| from our code above). They evaluate the unnormalized density on this grid, but because there are a finite number of points, they can divide by the sum, yielding a pmf that sums to $1$. 
+
+% \begin{verbatim}
+% samp_indices <- sample(length(df_marg$p), 
+%                        size = nsamp,
+%                        replace = T, 
+%                        prob = df_marg$p/sum(df_marg$p))
+% \end{verbatim}
+% \pause
+
+% % We will spend a lot of time in this class talking about different ways to sample from a posterior without knowing its normalizing constant!
+
+% \end{frame}
+
+
+
+% % ----------------------------------------------------------------------------------------
+% \begin{frame}
+% \frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+% NB1: Anytime we have an improper prior, we must check that the posterior is proper! Our Bayesian inference will not make sense if it isn't. See question HW2 question 9.
+% \newline
+% \pause
+
+% NB2: You can do these calculations in the original parameter space $(\alpha, \beta)$, or you can do them in the transformed space $(\log(\alpha/\beta), \log(\alpha+\beta))$. If you choose the second one, you must use Jacobians for any distribution of $\alpha,\beta$, but you do not need Jacobians for distributions that condition on $\alpha,\beta$. 
+% \newline
+% \pause
+
+% NB3: You can see from pictures in the text, the posterior is less ``pinched" in the transformed space.  When we study MCMC algorithms, we will learn why pinchedness is undesirable.
+
+% \end{frame}
+
+
+
+
+\end{document} 
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

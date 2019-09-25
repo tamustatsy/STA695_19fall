@@ -1,0 +1,17 @@
+\frametitle{Finding $p(\alpha,\beta \mid y)$ }
+
+So then we exponentiate. But watch out:
+\begin{verbatim}
+> head(lp)
+[1] -747.6954 -747.6320 -747.8540 -748.3062 -748.9466 -749.7425
+> head(exp(lp))
+[1] 0 0 0 0 0 0
+\end{verbatim}
+\pause
+
+This is {\bf numerical underflow}. Solution:
+\[
+p(\alpha, \beta \mid y) \propto \exp[\log p(\alpha, \beta \mid y) + m]
+\]
+\verb|m| is any ``big" number. Careful not to set it too large, because then you will get {\bf overflow}. The author uses a good data-dependent solution: set \verb|m| to be equal to be negative of the maximum of these log-values, which is $\log p(\alpha, \beta \mid y)$.
+
