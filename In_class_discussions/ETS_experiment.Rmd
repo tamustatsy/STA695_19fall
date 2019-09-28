@@ -1,0 +1,267 @@
+---
+title: "(5.4,5.5) ETS Experiments and Hierarchical Normal Models"
+author: "Weihang Ren"
+output: 
+  beamer_presentation:
+    includes:
+        in_header: mypreamble.tex
+classoption: "aspectratio=169"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+require(knitr) 
+require(kableExtra)
+require(xtable)
+library(ggplot2)
+theme_set(theme_minimal())
+library(gridExtra)
+library(tidyr)
+library(rprojroot)
+y <- c(28,8,-3,7,-1,1,18,12)
+s <- c(15,10,16,11,9,11,10,18)
+x <- seq(-40, 60, length.out = 500)
+df_sep <- mapply(function(y, s, x) dnorm(x, y, s), y, s, MoreArgs = list(x = x)) %>%
+  as.data.frame() %>% setNames(LETTERS[1:8]) %>% cbind(x) %>% gather(school, p, -x)
+labs1 <- c('Other Schools', 'School A')
+plot_sep <- ggplot(data = df_sep) +
+  geom_line(aes(x = x, y = p, color = (school=='A'), group = school)) +
+  labs(x = 'Treatment effect', y = '', title = 'Separate model', color = '') +
+  scale_y_continuous(breaks = NULL) +
+  scale_color_manual(values = c('blue','red'), labels = labs1) +
+  theme(legend.background = element_blank(), legend.position = c(0.8,0.9))
+df_pool <- data.frame(x = x, p = dnorm(x, sum(y/s^2)/sum(1/s^2), sqrt(1/sum(1/s^2))))
+plot_pool <- ggplot(data = df_pool) +
+  geom_line(aes(x = x, y = p, color = '1')) +
+  labs(x = 'Treatment effect', y = '', title = 'Pooled model', color = '') +
+  scale_y_continuous(breaks = NULL) +
+  scale_color_manual(values = 'red', labels = 'All schools') +
+  theme(legend.background = element_blank(), legend.position = c(0.7,0.9))
+```
+
+## The ETS Dataset 
+- ETS performed a study to analyze the effects of coaching programs on test scores (SAT Verbal).
+- Data was collected from eight high schools.
+- Data: 
+    - The estimated coaching effect $y_j, j=1,2,\cdots,8$, 
+    - And its sampling variance $\sigma^2_j$. 
+    - Approximated normal sampling distribution.
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE,fig.height = 4, fig.width = 4/9*16}
+school <- c("A","B","C","D","E","F","G","H")
+y      <- c(28,8,-3,7,-1,1,18,12)
+se     <- c(15,10,16,11,9,11,10,18)
+table  <- data.frame(school,y,se)
+table1 <- t(table)
+rownames(table1) <- c("High School","Coaching Effect","SE of C.E.")
+kableExtra::kable((table1)) %>%
+  kable_styling(position = "center")
+plot1 <- ggplot(table,aes(x=school,y=y,colour=school))+geom_point()+
+    geom_errorbar(aes(ymin=y-1.96*se,ymax=y+1.96*se),width=0.1,colour="blue")+
+    geom_text(aes(label=school),hjust=2, vjust=0)+
+    ylab("Coaching Effect")+
+    labs(title = "Coaching Effect with 95% CI")
+```
+- Question: How effective are SAT-V prep courses?
+
+
+## The ETS Dataset 
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE,fig.height = 4, fig.width = 4/9*16}
+plot1
+```
+
+
+## The ETS dataset : Data Structure
+
+\begin{itemize}
+    \item $J$ independent experiments (schools).
+    \item Experiment $j$ is to estimate $\theta_j$ with $n_j$ data points $y_{ij}$ (Coaching Effect).
+    $$
+    y_{ij}|\theta_j \sim N(\theta_j,\sigma^2), i=1,\cdots,n_j, j=1,\cdots,J
+    $$
+    $\sigma^2$ is assumed to be known.
+    \item Denote $\bar{y}_{\cdot j}=\frac{1}{n_j}\sum_{i=1}^{n_j} y_{ij}$, then
+    $$
+    \bar{y}_{\cdot j}|\theta_j \sim N(\theta_j,\sigma_j^2), \sigma_j^2=\sigma^2/n_j
+    $$
+\end{itemize}
+
+## Nonhierarchical Approaches
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+Separate Estimates
+\begin{itemize}
+\item<2-> Consider each estimate $\theta_j$ separately. 
+$$
+\bar{y}_{\cdot j}=\frac{1}{n_j}\sum_{i=1}^{n_j} y_{ij}
+$$
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+Pooled Estimates
+\begin{itemize}
+\item<2-> Consider a single common effect
+$$
+\bar{y}_{\cdot \cdot}=\frac{1}{\sum_{j=1}^{J}n_j}\sum_{i,j} y_{ij} = \frac{\sum_{j=1}^{J} \frac{1}{\sigma_j^2}\bar{y}_{\cdot j}}{\sum_{j=1}^{J}\frac{1}{\sigma_j^2}}
+$$
+\end{itemize}
+\end{column}
+\end{columns}
+\vspace{-1.5em}
+\onslide<3->{
+\begin{center}
+    \begin{tabular}{lcccc}
+    \hline
+        & $df$ &SS&MS& $\mathrm{E}(\mathrm{MS}|\sigma^2,\tau)$ \\
+    \hline
+        Between Groups & $J-1$ &$\sum_{i}\sum_{j}(\bar{y}_{\cdot j}-\bar{y}_{\cdot j})^2$& SS$/(J-1)$ & $n\textcolor{red}{\tau}^2+\sigma^2$  \\ 
+        Within Groups & $J(n-1)$ &$\sum_{i}\sum_{j}(y_{ij}-\bar{y}_{\cdot j})^2$& SS$/J(n-1)$ & $\sigma^2$ \\ 
+        Total & $Jn-1$ &$\sum_{i}\sum_{j}(y_{ij}-\bar{y}_{\cdot\cdot})^2$& SS$/(Jn-1)$ & \\
+    \hline
+    \end{tabular}
+\end{center}
+}
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+
+\begin{itemize}
+\item<4-> For school A, effect is 28.4 with se 14.9
+\item<5-> $P(\theta_1>28.4)=\frac{1}{2}$?
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+
+\begin{itemize}
+\item<4-> For school A, effect is 7.9 with se 4.2
+\item<5-> $P(\theta_1<7.9)=\frac{1}{2}$?
+\end{itemize}
+\end{column}
+\end{columns}
+
+## The ETS Dataset 
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE,fig.height = 4, fig.width = 4/9*16*2}
+grid.arrange(plot_sep, plot_pool,ncol=2)
+```
+
+## Hierarchical Approaches
+$$
+\hat{\theta}_j = \lambda_j \bar{y}_{\cdot j} + (1-\lambda_j) \bar{y}_{\cdot \cdot}
+$$
+\begin{itemize}
+    \item<1-> The separate estimate is posterior mean if $J$ values $\theta_j$ have independent uniform prior density on $(-\infty,\infty)$.
+    \item<2-> The pooled estimate is posterior mean if $J$ values $\theta_j$ are restricted to be equal, with uniform prior on common $\theta$.
+    \item<3-> The weighted combination is posterior mean if $J$ values $\theta_j$ have i.i.d normal prior.
+\end{itemize}
+\vspace{-1.5em}
+\onslide<4->{
+\begin{equation*}
+\begin{split}
+p(\theta_1,\cdots,\theta_J|\mu,\tau)&=\prod_{j=1}^{J}N(\theta_j|\mu,\tau)\\
+p(\mu,\tau)&=p(\mu|\tau)p(\tau) \propto p(\tau)\\
+\end{split}
+\end{equation*}
+}
+\vspace{-1.5em}
+\begin{itemize}
+\item<5-> $\theta_j$'s are conditionally independent given $(\mu,\tau)$.
+\item<6-> Assign non-informative uniform hyperprior to $\mu$ given $\tau$. We can afford to be vague because $J$ experiments are highly informative about $\mu$.
+\end{itemize}
+
+## Hierarchical Approaches: Joint and Conditional Posterior Distribution 
+
+\begin{itemize}
+    \item Joint Posterior Distribution:\begin{equation*}
+        \begin{split}
+        p(\theta,\mu,\tau|y)&\propto p(\mu,\tau)p(\theta|\mu,\tau)p(y|\theta)\\
+        &\propto p(\mu,\tau)\prod_{j=1}^{J}N(\theta_j|\mu,\tau^2)\prod_{j=1}^{J}N(\bar{y}_{\cdot j}|\theta_j,\sigma_j^2)\\
+        \end{split}
+    \end{equation*}
+    \item Conditional Posterior Distribution: $\theta_j$ are conditionally independent, so the conditional posterior has $J$ components. Each of them is a normal so $$\textcolor{red}{\bar{y}_{\cdot j}|\theta_i\sim N(\theta_i,\sigma_j^2)};\textcolor{blue}{\theta_i|(\mu,\tau)\sim N(\mu,\tau^2)}\implies\theta_j|\mu,\tau,y \sim N(\hat{\theta}_j,V_j)$$ where \begin{equation*}
+\hat{\theta_j} =\frac{ \textcolor{red}{ \frac{1}{\sigma_j^2}\bar{y}_{\cdot j} } + \textcolor{blue}{\frac{1}{\tau^2}\mu} }{\textcolor{red}{ \frac{1}{\sigma_j^2}}+\textcolor{blue}{\frac{1}{\tau^2}}} \text{  and  } V_j=\frac{1}{\textcolor{red}{ \frac{1}{\sigma_j^2}}+\textcolor{blue}{\frac{1}{\tau^2}} }
+\end{equation*}
+\end{itemize}
+
+
+## Hierarchical Approaches: Marginal Posterior Distribution 
+Fully Bayesian Treatment for $p(\mu,\tau|y)$:
+\begin{enumerate}
+    \item Brute Force:$$p(\mu,\tau|y)=\int p(\theta,\mu,\tau|y)d\theta$$
+    \item Analytic Solution:$$p(\mu,\tau|y)=\frac{p(\theta,\mu,\tau|y)}{p(\theta|y)}$$
+    \item There is a different solution for Hierarchical Normal Model $$p(\mu,\tau|y)\propto p(\mu,\tau)p(y|\mu,\tau)$$
+    \begin{itemize}
+    \item $p(y|\mu,\tau)$ could be written in closed form: $\bar{y}_{\cdot j}|\mu,\tau\sim N(\mu,\sigma_j^2+\tau^2)$ $$ 
+    \mathrm{E}(e^{it\bar{y}_{\cdot j}}|\mu,\sigma)=\mathrm{E}(\textcolor{red}{\mathrm{E}(e^{it\bar{y}_{\cdot j}}|\theta_j)}|\mu,\sigma)=\textcolor{blue}{\mathrm{E}(e^{it\theta_j}|\mu,\sigma)}e^{-\frac{1}{2}\sigma_j^2}=e^{it\mu-\frac{1}{2}(\sigma_j^2+\tau^2)}
+    $$
+    \end{itemize}
+\end{enumerate}
+
+## Hierarchical Approaches: Posterior distribution of $\mu$ given $\tau$. $p(\mu|\tau,y)$
+
+\begin{itemize}
+    \item From previous page $$p(\mu,\tau|y)\propto p(\tau)p(\mu|\tau)\prod_{j=1}^{J}N(\bar{y}_{\cdot j}|\mu,\sigma_j^2+\tau^2)$$
+    \item Given $\tau$ fixed, and $p(\mu|\tau)\propto 1$, the $\log p(\mu,\tau|y)$ is quadratic in $\mu$. This implies $p(\mu|\tau,y)$ must be normal.$$
+    \mu|\tau,y \sim N(\hat{\mu},V_{\mu})
+    $$ where $$
+    \hat{\mu}=\frac{\sum_{j=1}^J\frac{1}{\sigma_j^2+\tau^2}\bar{y}_{\cdot j}}{\sum_{j=1}^J\frac{1}{\sigma_j^2+\tau^2}} \text{  and  } V_{\mu}=\frac{1}{\sum_{j=1}^J\frac{1}{\sigma_j^2+\tau^2}}
+    $$
+    
+\end{itemize}
+
+
+## Hierarchical Approaches: Posterior distribution of $\tau$. $p(\tau|y)$
+
+\begin{equation*}
+    \begin{split}
+    p(\tau|y) &=\frac{p(\mu,\tau|y)}{p(\mu|\tau,y)}\propto  \frac{ p(\tau)p(\mu | \tau)p(y |\mu, \tau)   }{ p(\mu |\tau, y) } \\
+    &\propto \frac{p(\tau)p(\mu|\tau)\prod_{j=1}^{J}N(\bar{y}_{\cdot j}|\mu,\sigma_j^2+\tau^2)}{N(\hat{\mu},V_{\mu})} \\
+    &\propto p(\tau)\frac{\prod_j (\sigma^2_j + \tau^2)^{-1/2} \exp\left[ -\frac{1}{2 (\sigma^2_j + \tau^2) } (\bar{y}_{\cdot,j} - \mu)^2\right] }{ V_{\mu}^{-1/2} \exp\left[ -\frac{1}{2 V_{\mu} } (\mu -\hat{\mu} )^2\right] } \\
+    &\propto p(\tau)\frac{\prod_j (\sigma^2_j + \tau^2)^{-1/2} \exp\left[ -\frac{1}{2 (\sigma^2_j + \tau^2) } (\mu -  \hat{\mu} + \hat{\mu} - \bar{y}_{\cdot,j}  )^2\right] }{ V_{\mu}^{-1/2} \exp\left[ -\frac{1}{2 V_{\mu} } (\mu -\hat{\mu} )^2\right] } \\
+    &\propto p(\tau)V^{1/2}_{\mu}\prod_{i=1}^{J}(\sigma_j^2+\tau^2)^{-1/2}\exp(-\frac{(\bar{y}_{\cdot j}-\hat{\mu})^2}{2(\sigma_j^2+\tau^2)})\\
+    \end{split}
+\end{equation*}
+
+
+## Hierarchical Approaches: Posterior distribution of $\tau$. $p(\tau|y)$
+
+\begin{align*}
+&-\sum_j \frac{1}{ (\sigma^2_j + \tau^2) } (\mu -  \hat{\mu} + \hat{\mu} - \bar{y}_{\cdot,j}  )^2 + \frac{1}{ V_{\mu} } (\mu -\hat{\mu} )^2 \\
+&= \overbrace{- \sum_j \frac{(\hat{\mu} - \bar{y}_{\cdot,j})^2}{ (\sigma^2_j + \tau^2) }}^{keep} - \sum_j \frac{(\mu -  \hat{\mu})^2}{ (\sigma^2_j + \tau^2) }  + \sum_j \frac{2(\hat{\mu} - \bar{y}_{\cdot,j})(\mu -  \hat{\mu})}{ (\sigma^2_j + \tau^2) }+ \frac{1}{ V_{\mu} } (\mu -\hat{\mu} )^2 \\
+&= \overbrace{- \sum_j \frac{(\hat{\mu} - \bar{y}_{\cdot,j})^2}{ (\sigma^2_j + \tau^2) }}^{keep}   + 2 (\mu -  \hat{\mu})\sum_j \frac{(\hat{\mu} - \bar{y}_{\cdot,j})}{ (\sigma^2_j + \tau^2) }  \\
+&= \overbrace{- \sum_j \frac{(\hat{\mu} - \bar{y}_{\cdot,j})^2}{ (\sigma^2_j + \tau^2) }}^{keep}   + 2 (\mu -  \hat{\mu})(\hat{\mu}V_{\mu}^{-1} - \hat{\mu}V_{\mu}^{-1} )  = - \sum_j \frac{(\hat{\mu} - \bar{y}_{\cdot,j})^2}{ (\sigma^2_j + \tau^2) }
+\end{align*}
+
+## The ETS Dataset: Evaluate $p(\tau | y)$ on a Grid
+
+\begin{center}
+\includegraphics[width=120mm]{marg_post.png}
+\end{center}
+
+\begin{itemize}
+\item Values of $\tau$ near zero are most plausible;
+\item Values of $\tau$ larger than $10$ are less than half as likely as $\tau=0$, and $P(\tau > 25) \approx 0$.
+\end{itemize}
+
+## The ETS Dataset: $p(\theta_j | \tau, y) = \int p(\theta_j | \mu, \tau, y) p(\mu | \tau, y)\text{d}\mu$ 
+
+
+\begin{center}
+\includegraphics[width=90mm]{cond_post.png}
+\end{center}
+\vspace{-1.5em}
+\begin{itemize}
+\item For most of the likely values of $\tau$, the estimated effects are relatively close together;
+\item As $\tau$ increases, the population distribution allows the eight effects to be more different from each other, and hence the posterior uncertainty in each individual $\theta_j$ increases.
+\end{itemize}
+
+## The ETS Dataset:Conclusion
+- v.s. Pooled
+    - Too much pulling together of the estimates in the eight schools;          - $\tau$ is on the boundary of its parameter space.
+- v.s. Seperate
+    - Ordering of the effects in the eight schools is essentially the same as would be obtained by the eight separate estimates.
+    - Bayesian probability that the effect in school A is as large as 28 points is less than 10\%, which is substantially less than the 50\% probability based on the separate estimate for school A.
+
+- Hierarchical model is flexible enough to adapt to the data, thereby providing posterior inferences that account for the partial pooling as well as the uncertainty in the hyperparameters.
+
+
