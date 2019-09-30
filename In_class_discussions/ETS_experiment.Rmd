@@ -1,5 +1,5 @@
 ---
-title: "(5.4,5.5) ETS Experiments and Hierarchical Normal Models"
+title: "(5.4,5.5) ETS Experiments and Normal Hierarchical Models"
 author: "Weihang Ren"
 output: 
   beamer_presentation:
@@ -40,7 +40,12 @@ plot_pool <- ggplot(data = df_pool) +
   theme(legend.background = element_blank(), legend.position = c(0.7,0.9))
 ```
 
-## The ETS Dataset 
+
+
+
+
+## The \includegraphics[width=0.06\paperwidth]{ETS.png} Dataset 
+
 - ETS performed a study to analyze the effects of coaching programs on test scores (SAT Verbal).
 - Data was collected from eight high schools.
 - Data: 
@@ -60,7 +65,7 @@ plot1 <- ggplot(table,aes(x=school,y=y,colour=school))+geom_point()+
     geom_errorbar(aes(ymin=y-1.96*se,ymax=y+1.96*se),width=0.1,colour="blue")+
     geom_text(aes(label=school),hjust=2, vjust=0)+
     ylab("Coaching Effect")+
-    labs(title = "Coaching Effect with 95% CI")
+    labs(title = "Coaching Effect with Mean (2 SD)")
 ```
 - Question: How effective are SAT-V prep courses?
 
@@ -145,6 +150,8 @@ $$
 grid.arrange(plot_sep, plot_pool,ncol=2)
 ```
 
+
+
 ## Hierarchical Approaches
 $$
 \hat{\theta}_j = \lambda_j \bar{y}_{\cdot j} + (1-\lambda_j) \bar{y}_{\cdot \cdot}
@@ -169,6 +176,23 @@ p(\mu,\tau)&=p(\mu|\tau)p(\tau) \propto p(\tau)\\
 \item<6-> Assign non-informative uniform hyperprior to $\mu$ given $\tau$. We can afford to be vague because $J$ experiments are highly informative about $\mu$.
 \end{itemize}
 
+## Hierarchical Approaches
+
+\begin{itemize}
+    \item $J$ independent experiments (schools).
+    \item Experiment $j$ is to estimate $\theta_j$ with $n_j$ data points $y_{ij}$ (Coaching Effect).
+    $$
+    y_{ij}|\theta_j \sim N(\theta_j,\sigma^2), i=1,\cdots,n_j, j=1,\cdots,J
+    $$
+    $\sigma^2$ is assumed to be known.
+    \item Denote $\bar{y}_{\cdot j}=\frac{1}{n_j}\sum_{i=1}^{n_j} y_{ij}$, then
+    $$
+    \bar{y}_{\cdot j}|\theta_j \sim N(\theta_j,\sigma_j^2), \sigma_j^2=\sigma^2/n_j
+    $$
+    \item $\textcolor{red}{\theta_j|\mu,\tau \sim N(\mu,\tau^2)}$.
+    \item $\textcolor{red}{\mu,\tau \sim p(\mu,\tau)}$
+\end{itemize}
+
 ## Hierarchical Approaches: Joint and Conditional Posterior Distribution 
 
 \begin{itemize}
@@ -189,7 +213,7 @@ Fully Bayesian Treatment for $p(\mu,\tau|y)$:
 \begin{enumerate}
     \item Brute Force:$$p(\mu,\tau|y)=\int p(\theta,\mu,\tau|y)d\theta$$
     \item Analytic Solution:$$p(\mu,\tau|y)=\frac{p(\theta,\mu,\tau|y)}{p(\theta|y)}$$
-    \item There is a different solution for Hierarchical Normal Model $$p(\mu,\tau|y)\propto p(\mu,\tau)p(y|\mu,\tau)$$
+    \item There is a different solution for Normal Hierarchical Model $$p(\mu,\tau|y)\propto p(\mu,\tau)p(y|\mu,\tau)$$
     \begin{itemize}
     \item $p(y|\mu,\tau)$ could be written in closed form: $\bar{y}_{\cdot j}|\mu,\tau\sim N(\mu,\sigma_j^2+\tau^2)$ $$ 
     \mathrm{E}(e^{it\bar{y}_{\cdot j}}|\mu,\sigma)=\mathrm{E}(\textcolor{red}{\mathrm{E}(e^{it\bar{y}_{\cdot j}}|\theta_j)}|\mu,\sigma)=\textcolor{blue}{\mathrm{E}(e^{it\theta_j}|\mu,\sigma)}e^{-\frac{1}{2}\sigma_j^2}=e^{it\mu-\frac{1}{2}(\sigma_j^2+\tau^2)}
