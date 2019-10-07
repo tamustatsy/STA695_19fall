@@ -1,0 +1,25 @@
+\frametitle{p-values and u-values}
+
+Generally $P(T(y^{\text{rep}}, \theta) \le T(y, \theta) \mid y)$ is
+``stochastically less variable" than uniform, which means p-value is
+more likely to be near 0.5 than near 0 or 1.
+\newline
+
+
+% One thing the authors *could* mean is that these conditional probabilities are {\bf convex ordered}.
+% \newline
+
+
+% Random variables $X$ and $Y$ are convex-ordered if, for any convex function $u$,
+% $$
+% E\left[u(X) \right] \le E\left[ u(Y) \right].
+% $$
+
+% Conditional probabilities are convex ordered when one conditions on less than another (homework question).
+
+(This is left as an in-class discussion due Oct 14. Give your arguments through
+simulations.)
+\newline
+
+A u-value is defined as a function of the data $y$ that has a $U(0,1)$
+sampling distribution. Therefore, Bayesian $p$-values are not always u-values.
