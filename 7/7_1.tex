@@ -357,27 +357,27 @@ Both of these can be approximated using samples from the posterior.
 \end{itemize}
 \end{frame}
 
+% %----------------------------------------------------------------------------------------
+% \begin{frame}
+% \frametitle{Information Criteria}
+
+% Motivation for $p_{\text{DIC}}$
+% \begin{align*}
+% &E_{\tilde{y}}\left[-2  \log p(\tilde{y} \mid \hat{\theta}_{\text{Bayes}})  \right] \\
+% &= - 2\log p(y \mid \hat{\theta}_{\text{Bayes}}) + E_{\tilde{y}}\left[  -2\log p(\tilde{y} \mid \hat{\theta}_{\text{Bayes}})  \right] + 2\log p(y \mid \hat{\theta}_{\text{Bayes}})\\
+% &\approx - 2\log p(y \mid \hat{\theta}_{\text{Bayes}}) +  E_{\theta \mid y}\left[ - 2 \log p(y \mid \theta) \right] + 2 \log p(y \mid \hat{\theta}_{\text{Bayes}} ) \\
+% &= - 2\log p(y \mid \hat{\theta}_{\text{Bayes}}) + 2 p_{\text{DIC}}
+% \end{align*}
+
+% \end{frame}
+
+
 %----------------------------------------------------------------------------------------
 \begin{frame}
 \frametitle{Information Criteria}
 
-Motivation for $p_{\text{DIC}}$
-\begin{align*}
-&E_{\tilde{y}}\left[-2  \log p(\tilde{y} \mid \hat{\theta}_{\text{Bayes}})  \right] \\
-&= - 2\log p(y \mid \hat{\theta}_{\text{Bayes}}) + E_{\tilde{y}}\left[  -2\log p(\tilde{y} \mid \hat{\theta}_{\text{Bayes}})  \right] + 2\log p(y \mid \hat{\theta}_{\text{Bayes}})\\
-&\approx - 2\log p(y \mid \hat{\theta}_{\text{Bayes}}) +  E_{\theta \mid y}\left[ - 2 \log p(y \mid \theta) \right] + 2 \log p(y \mid \hat{\theta}_{\text{Bayes}} ) \\
-&= - 2\log p(y \mid \hat{\theta}_{\text{Bayes}}) + p_{\text{DIC}}
-\end{align*}
-
-
-\end{frame}
-
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Information Criteria}
-
-$p_{\text{WAIC}}$ either stands for ``Watanabe-Akaike information criterion." 
+$p_{\text{WAIC}}$ stands for ``Watanabe-Akaike information criterion" 
+or ``widely available information criterion"
 \newline
 
 The book refers to it as the most ``fully Bayesian" of the three, probably because it doesn't plug in point estimates into the likelihood instead of integrating.
@@ -401,7 +401,7 @@ where $ \text{lppd}$ is computed by Monte Carlo method as $\sum_{i=1}^n \log \le
 Two ways to estimate 
 
 \begin{enumerate}
-\item $p_{\text{WAIC 1}} = 2\sum_{i=1}^n \left( \log E_{\text{post}}\{p(y_i \mid y)\} - E_{post} \left\{  \log p(y_i \mid \theta) \right\} \right)$
+\item $p_{\text{WAIC 1}} = 2\sum_{i=1}^n \left( \log p_{\text{post}}(y_i) - E_{post} \left\{  \log p(y_i \mid \theta) \right\} \right)$
 \item $p_{\text{WAIC 2}} = \sum_{i=1}^n var_{\text{post}}(\log p(y_i \mid \theta))$
 \end{enumerate}
 
@@ -410,27 +410,27 @@ Both of these can be approximated using samples from the posterior.
 \end{frame}
 
 
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Information Criteria}
+% %----------------------------------------------------------------------------------------
+% \begin{frame}
+% \frametitle{Information Criteria}
 
-Motivation for $p_{\text{WAIC}}$:
+% Motivation for $p_{\text{WAIC}}$:
 
-\begin{align*}
-% &E_{\tilde{y}}\left[ -2  \log   p(\tilde{y} \mid y)  \right] \\
-&E_{\tilde{y}}\left[ -2  \log  E_{\theta \mid y} ( p(\tilde{y} \mid \theta) ) \right] \\
-&= - 2 lppd + 2\left( lppd - E_{\tilde{y}}\left[  \log  E_{\theta \mid y} ( p(\tilde{y} \mid \theta) ) \right] \right) \\
-&\approx - 2 lppd + 2\left( lppd - E_{\tilde{y}}\left[   E_{\theta \mid y} ( \log  p(\tilde{y} \mid \theta) ) \right] \right) \\
-&= - 2 lppd + 2\left( lppd - E_{\theta \mid y}\left[   E_{\tilde{y}} (\log  p(\tilde{y} \mid \theta) ) \right] \right) \\
-&\approx - 2 lppd + 2\left( lppd - E_{\theta \mid y}\left[  \log   p(y \mid \theta)  \right] \right) \\
-&= - 2 lppd + 2\left( \sum_i \log p_{\text{post}}(y_i) - E_{\text{post}}\left[  \log   \prod_i p(y_i \mid \theta)  \right] \right) \\
-&= - 2 lppd + 2 \sum_i \left(  \log p_{\text{post}}(y_i) - E_{\text{post}}\left[ \log p(y_i \mid \theta)  \right] \right) \\
-&= - 2\log p(y \mid y) + p_{\text{WAIC} 1}
-\end{align*}
+% \begin{align*}
+% % &E_{\tilde{y}}\left[ -2  \log   p(\tilde{y} \mid y)  \right] \\
+% &E_{\tilde{y}}\left[ -2  \log  E_{\theta \mid y} ( p(\tilde{y} \mid \theta) ) \right] \\
+% &= - 2 lppd + 2\left( lppd - E_{\tilde{y}}\left[  \log  E_{\theta \mid y} ( p(\tilde{y} \mid \theta) ) \right] \right) \\
+% &\approx - 2 lppd + 2\left( lppd - E_{\tilde{y}}\left[   E_{\theta \mid y} ( \log  p(\tilde{y} \mid \theta) ) \right] \right) \\
+% &= - 2 lppd + 2\left( lppd - E_{\theta \mid y}\left[   E_{\tilde{y}} (\log  p(\tilde{y} \mid \theta) ) \right] \right) \\
+% &\approx - 2 lppd + 2\left( lppd - E_{\theta \mid y}\left[  \log   p(y \mid \theta)  \right] \right) \\
+% &= - 2 lppd + 2\left( \sum_i \log p_{\text{post}}(y_i) - E_{\text{post}}\left[  \log   \prod_i p(y_i \mid \theta)  \right] \right) \\
+% &= - 2 lppd + 2 \sum_i \left(  \log p_{\text{post}}(y_i) - E_{\text{post}}\left[ \log p(y_i \mid \theta)  \right] \right) \\
+% &= - 2\log p(y \mid y) + p_{\text{WAIC} 1}
+% \end{align*}
 
 
 
-\end{frame}
+% \end{frame}
 
 %----------------------------------------------------------------------------------------
 \begin{frame}
