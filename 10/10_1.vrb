@@ -1,0 +1,13 @@
+\frametitle{Effective Sample Size}
+
+% Effective sample size calculations use a second order delta method.
+% \newline
+
+Calculating
+$$
+\textrm{ESS} = \frac{1}{\sum_{s=1}^S w(\theta^s)^2}
+$$
+will tell you, effectively, how many iid samples you have.
+
+%http://www.nowozin.net/sebastian/blog/effective-sample-size-in-importance-sampling.html
+
