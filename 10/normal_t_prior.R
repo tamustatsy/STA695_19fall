@@ -51,5 +51,19 @@ num_samps_per_estimate <- 10
 sqrt(getISEstimator(num_samps_per_estimate)$approx_var) 
 sd(replicate(1000, getISEstimator(num_samps_per_estimate)$estimate))
 
-
-  
+#importance resampling 
+y <- 2 # fake data
+log_unnorm_weight <- function(theta){
+  # can ignore sqrt(2pi) because it will cancel out
+  -.5*(y - theta)^2 }
+num_samples <- 10000
+theta_draws <- rt(num_samples , 1)
+lunws <- log_unnorm_weight(theta_draws)
+# note: prob arg automatically normalizes
+random_indexes <- sample(x = num_samples,
+                         size = num_samples, replace = T,
+                         prob = exp(lunws))
+sort(random_indexes) # see there are repeats! resampled_draws <- theta_draws[random_indexes] hist(resampled_draws) # can’t do this unless we resample  
+resampled_draws <- theta_draws[random_indexes] 
+hist(resampled_draws, freq = FALSE) # can’t do this unless we resample
+# lines(density(resampled_draws),col="red")
