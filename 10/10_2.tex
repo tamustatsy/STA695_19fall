@@ -82,7 +82,7 @@
 % \medskip
 % \textit{} 
 % }
-\date{10/28/19} 
+\date{10/30/19} 
     
 \begin{document}
 %----------------------------------------------------------------------------------------
@@ -142,7 +142,8 @@ Stage 1: do importance sampling to get $\{ \theta^i, w(\theta^i) \}_{i=1}^S$.
 
 Stage 2: for $i = 1, \ldots, S$, select 
 $$
-P[ \tilde{\theta}^i = \theta^j \mid \theta^1, w(\theta^1), \ldots, \theta^S, w(\theta^S) ] = \frac{w(\theta^j)}{ \sum_k w(\theta^k) }.
+P[ \tilde{\theta}^i = \theta^j \mid \theta^1, w(\theta^1), \ldots,
+\theta^S, w(\theta^S) ] = w(\theta^j).
 $$
 
 \end{frame}
@@ -204,7 +205,7 @@ hist(resampled_draws) # can't do this unless we resample
 \pause
 \item Calculation of intractable quantity under a change of model.\\
 
-Posterior under the previous model: $p_1(\theta|y)$
+Posterior under the previous model: $p_1(\theta|y) \propto q_1(\theta|y)$
 
 $\theta^1, \ldots, \theta^S \sim p_1(\theta|y)$
 
@@ -213,11 +214,11 @@ Posterior after a change of model: $p_2(\theta|y) \propto q_2(\theta|y)$
 We need $E_2(h(\theta)|y)$
 \pause
 
-Importance sampling with $g(\theta) = q_2(\theta|y)$,
+Importance sampling with $g(\theta) = q_1(\theta|y)$,
 $\tilde{w}(\theta) = q_2(\theta|y)/q_1(\theta|y)$, $w(\theta^s) =
 \tilde{w}(\theta^s)/\sum_{l=1}^S \tilde{w}(\theta^l)$
 \[
-E_2(h(\theta)|y) = \sum_{i=1}^S h(\theta^s) w(\theta^s)/
+E_2(h(\theta)|y) = \sum_{i=1}^S h(\theta^s) w(\theta^s)
 \]
 \end{itemize}
 \end{frame}

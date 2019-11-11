@@ -1,0 +1,276 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{amsfonts}
+\usepackage{mathrsfs, bbold}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{mathtools} % gather
+\usepackage[export]{adjustbox} % right-aligned graphics
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title["12"]{12: Computationally Efficient Markov chain Simulation}
+
+% \author{Taylor} 
+% \institute[UVA] 
+% {
+% University of Virginia \\
+% \medskip
+% \textit{} 
+% }
+% \date{} 
+
+\begin{document}
+%----------------------------------------------------------------------------------------
+
+\begin{frame}
+\titlepage 
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Introduction}
+
+We mention:
+\begin{enumerate}
+\item an example where adding auxiliary variables increases computational efficiency
+\item a few tuning tips for Random-Walk Metropolis-Hastings
+\item Metropolis-adjusted Langevin Algorithm (MALA)
+\item Hamiltonian Monte Carlo (HMC)
+\item Pseudo-Marginal Metropolis-Hastings (PMMH).
+\end{enumerate}
+
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Example: Data Augmentation}
+
+\begin{itemize}
+\item $y_1, \ldots, y_n \mid \mu, \sigma^2 \overset{\text{iid}}{\sim} t_{\nu}(\mu, \sigma^2)$
+\item $\nu$ is assumed known
+\item $p(y_i \mid \mu, \sigma^2) \propto \left(1 + \frac{1}{\nu}\left(\frac{y_i - \mu}{\sigma} \right)^2 \right)^{-(\nu+1)/2}$
+\item $p(\mu) \propto 1$
+\item $p(\sigma^2) \propto (\sigma^2)^{-1}$ (uniform for $\log \sigma$)
+\end{itemize}
+\pause
+
+Normally we would do
+$$
+p(\mu, \sigma \mid y) \propto p(y \mid \mu, \sigma^2)p(\mu)p(\sigma^2)
+$$
+\newline
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Example: Data Augmentation}
+
+Gibbs sampler not available :( 
+
+\begin{center}
+\includegraphics[width=100mm]{surf1}
+\end{center}
+see \verb|t_visualization.r|
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Data Augmentation: auxiliary variables}
+
+Instead, we introduce $V_i$ (hidden/latent/unobserved data):
+\begin{itemize}
+\item $p(y_i \mid V_i, \mu, \sigma^2) \sim N(\mu, V_i)$
+\item $p(V_i \mid \sigma^2) \sim \mbox{Inv-}\chi^2(\nu,\sigma^2)$   
+\item $\nu$ is assumed known still
+\item $p(\mu) \propto 1$ still
+\item $p(\sigma^2) \propto (\sigma^2)^{-1}$ (uniform for $\log \sigma$) still
+\end{itemize}
+
+% \begin{gather}
+%   p(y_i \mid V_i, \mu, \sigma^2) \sim N(\mu, V_i)\\
+%   %= (2\pi V_i)^{-1/2} \exp\left[- \frac{1}{2 V_i}\left(y_i - \mu \right)^2 \right] \\
+%   p(V_i \mid \sigma^2) \sim \mbox{Inv-}\chi^2(\nu,\sigma^2)
+%   %= \frac{(\nu/2)^{\nu/2}}{\Gamma(\nu/2) }\sigma^{\nu} V_i^{-(\nu/2 + 1)}\exp\left[- \nu \sigma^2/(2 V_i) \right]
+% \end{gather}
+
+\vspace{0.2cm}
+$p(y_i \mid \mu, \sigma^2)$ is the same as before.
+\end{frame}
+
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Data Augmentation: auxiliary variables}
+
+We can show that
+\begin{enumerate}
+\item $V_i \mid \mu, \sigma^2, y \sim \text{Inv-}\chi^2\left(\nu + 1, \frac{ \nu \sigma^2 + (y_i - \mu)^2 }{\nu+1 } \right)$
+\item $\mu \mid \sigma^2, V_{1:n}, y \sim \text{Normal}\left(\frac{\sum_i \frac{1}{V_i}y_i }{\sum_i \frac{1}{V_i} }, \frac{1}{ \sum_i \frac{1}{V_i} }\right)$ 
+\item $\sigma^2 \mid \mu, V_{1:n}, y \sim \text{Gamma}\left(\frac{n \nu}{2}, \frac{\nu}{2}\sum_i \frac{1}{V_i} \right)$
+\end{enumerate}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Data Augmentation: auxiliary variables}
+
+Note:
+\begin{align*}
+V_i \mid \mu, \sigma^2, y &\sim \text{Inv-}\chi^2\left(\nu + 1, \frac{ \nu \sigma^2 + (y_i - \mu)^2 }{\nu+1 } \right) \\
+&= \text{Inv-Gamma}\left(\frac{\nu+1}{2}, \frac{ \nu \sigma^2 + (y_i - \mu)^2 }{2 }\right)
+\end{align*}
+
+\begin{center}
+\includegraphics[width=40mm]{cond_dens_vi}
+\end{center}
+(see \verb|t_visualization.r|)
+\newline
+
+Near-zero values of $V_i$s lead to $\sigma^2$ being near zero, too.
+
+
+\end{frame}
+%----------------------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Data Augmentation: parameter expansion}
+
+Add another parameter: $\alpha > 0$
+\newline
+
+Rename a few things:
+\begin{gather}
+\tau^2 = \sigma^2/\alpha^2 \\
+U_i = V_i/\alpha^2 
+\end{gather}
+
+Assume a noninformative prior for $\alpha$: 
+$$
+p(\alpha^2) \propto (\alpha^2)^{-1}
+$$
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Data Augmentation: parameter expansion}
+\begin{itemize}
+\item $p(y_i \mid V_i, \mu, \sigma^2) \sim N(\mu, \alpha^2 U_i)$
+\item $p(U_i \mid \tau^2) \sim \mbox{Inv-}\chi^2(\nu,\tau^2)$   
+\item $\nu$ is assumed known 
+\item $p(\mu) \propto 1$ 
+\item $p(\tau^2) \propto (\tau^2)^{-1}$ (uniform for $\log \tau$) 
+\end{itemize}
+Prove that the model is not identifiable in the full parameter space! However, the inference about $\mu$, $\alpha \tau$, and $\alpha^2U_i$ is still valid.
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Data Augmentation: parameter expansion}
+
+Posterior conditional distributions are similar:
+\begin{enumerate}
+\item $U_i \mid \alpha, \mu, \tau^2, y \sim \text{Inv-}\chi^2\left(\nu + 1, \frac{ \nu \tau^2 + ((y_i - \mu)/\alpha)^2 }{\nu+1 } \right)$
+\item $\mu \mid \sigma^2, V_{1:n}, y \sim \text{Normal}\left(\frac{\sum_i \frac{1}{V_i}y_i }{\sum_i \frac{1}{V_i} }, \frac{1}{ \sum_i \frac{1}{V_i} }\right)$ 
+\item $\sigma^2 \mid \mu, V_{1:n}, y \sim \text{Gamma}\left(\frac{n \nu}{2}, \frac{\nu}{2}\sum_i \frac{1}{V_i} \right)$
+\end{enumerate}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Random Walk M-H: Some Tricks}
+
+Last chapter, when we were using the Metropolis-Hastings algorithm, we struggled with tuning our proposal's covariance matrix:
+
+$$
+q(\theta^* \mid \theta^{t-1}) = \text{Normal}(\theta^{t-1}, \Sigma).
+$$
+
+The book recommends setting 
+$$
+\Sigma \approx \frac{2.4^2}{d} \operatorname{Var}(\theta \mid y)
+$$
+after transforming $\theta$ be roughly normal. Here $d$ is the dimension of $\theta$. A rough approximation of the posterior covariance matrix is required.
+\newline
+
+The book also recommends aiming for an acceptance rate of about $22\%$ for problems where $d > 5$. 
+
+
+\end{frame}
+
+
+
+
+
+\end{document} 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

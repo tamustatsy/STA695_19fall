@@ -1,0 +1,16 @@
+\frametitle{Data Augmentation: parameter expansion}
+
+Add another parameter: $\alpha > 0$
+\newline
+
+Rename a few things:
+\begin{gather}
+\tau^2 = \sigma^2/\alpha^2 \\
+U_i = V_i/\alpha^2
+\end{gather}
+
+Assume a noninformative prior for $\alpha$:
+$$
+p(\alpha^2) \propto (\alpha^2)^{-1}
+$$
+
