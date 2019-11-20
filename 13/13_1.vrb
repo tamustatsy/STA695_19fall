@@ -1,0 +1,19 @@
+\frametitle{The EM Algorithm}
+
+Call $\theta = (\gamma, \phi)$. You're interested in the mode of $p(\phi \mid y)$. Typically, $\gamma$ is ``hidden data."
+\newline
+
+$$
+\log p(\phi \mid y) = \log \frac{p(\gamma, \phi \mid y)}{p(\gamma \mid \phi, y)} = \log \underbrace{p(\gamma, \phi \mid y)}_{ \text{joint posterior} } - \log \underbrace{p(\gamma \mid \phi, y)}_{\text{conditional posterior }}
+$$
+\pause
+
+taking expectations on both sides with respect to $p(\gamma \mid \phi^{\text{old}}, y)$ yields:
+$$
+\log p(\phi \mid y) =  E\left[ \log p(\gamma, \phi \mid y) \mid \phi^{\text{old}}, y \right] - E\left[\log p(\gamma \mid \phi, y) \mid \phi^{\text{old}}, y \right]
+$$
+
+% exercise 13.6 !
+
+
+

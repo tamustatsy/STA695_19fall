@@ -1,0 +1,292 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{amsfonts}
+\usepackage{mathrsfs, bbold}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{mathtools} % gather
+\usepackage[export]{adjustbox} % right-aligned graphics
+
+% argmax
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title["13"]{13: Modal And Distributional Approximations}
+
+\author{Taylor} 
+% \institute[UVA] 
+% {
+% University of Virginia \\
+% \medskip
+% \textit{} 
+% }
+\date{11/20/19} 
+
+\begin{document}
+%----------------------------------------------------------------------------------------
+
+\begin{frame}
+\titlepage 
+\end{frame}
+
+% %----------------------------------------------------------------------------------------
+% \begin{frame}
+% \frametitle{Introduction}
+
+% We mention:
+% \begin{enumerate}
+% \item a few ways to find the posterior mode
+% \item how to approximate a posterior using a mode 
+% \item slightly more involved ways to approximate your posterior
+% \end{enumerate}
+
+% % For various reasons, we also frequently split up our parameters into two groups: $\theta = (\gamma, \phi)$.
+
+
+% \end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Approximations using mixture distributions}
+
+The book has some discussions about approximating a posterior
+distribution in a direct way (including finding the mode) that we don't address:
+
+\begin{enumerate}
+\item approximating multimodal distributions with normal mixtures
+\item approximating multimodal distributions with t mixtures
+\end{enumerate}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The EM Algorithm}
+
+The {\bf expectation-maximization algorithm} finds the argument that maximizes the marginal posterior. It's useful in situations where there is missing data in a model (e.g. hierarchical models, factor models, hidden markov models, state space models, etc.). 
+\newline
+
+It folows the following steps
+\begin{enumerate}
+\item replace missing values by their expectations given the guessed parameters, 
+\item estimate parameters assuming the missing data are equal to their estimated values, 
+\item re-estimate the missing values assuming the new parameter estimates are correct,
+\item re-estimate parameters, 
+\end{enumerate}
+and so forth, iterating until convergence.
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{The EM Algorithm}
+
+Call $\theta = (\gamma, \phi)$. You're interested in the mode of $p(\phi \mid y)$. Typically, $\gamma$ is ``hidden data."
+\newline
+
+$$
+\log p(\phi \mid y) = \log \frac{p(\gamma, \phi \mid y)}{p(\gamma \mid \phi, y)} = \log \underbrace{p(\gamma, \phi \mid y)}_{ \text{joint posterior} } - \log \underbrace{p(\gamma \mid \phi, y)}_{\text{conditional posterior }}
+$$
+\pause
+
+taking expectations on both sides with respect to $p(\gamma \mid \phi^{\text{old}}, y)$ yields:
+$$
+\log p(\phi \mid y) =  E\left[ \log p(\gamma, \phi \mid y) \mid \phi^{\text{old}}, y \right] - E\left[\log p(\gamma \mid \phi, y) \mid \phi^{\text{old}}, y \right]
+$$
+
+% exercise 13.6 !
+
+
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The EM Algorithm}
+
+We iteratively use the middle term in
+$\log p(\phi \mid y) =  E\left[ \log p(\gamma, \phi \mid y) \mid \phi^{\text{old}}, y \right] - E\left[\log p(\gamma \mid \phi, y) \mid \phi^{\text{old}}, y \right]$.
+
+\begin{block}{The Q quantity in the ``E" step}
+
+$$
+Q(\phi \mid \phi^{\text{old}}) = E\left[ \log p(\gamma, \phi \mid y) \mid \phi^{\text{old}}, y \right]
+$$
+\end{block}
+\pause
+
+\begin{block}{The EM algorithm}
+
+Repeat the following until convergence:
+\begin{enumerate}
+\item E-step: calculate $Q(\phi \mid \phi^{\text{old}})$
+\item M-step: replace $\phi^{\text{old}}$ with $\argmax Q(\phi \mid \phi^{\text{old}})$
+\end{enumerate}
+\end{block}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The EM Algorithm}
+
+If we follow this strategy, $\log p(\phi \mid y)$ increases at every iteration:
+\begin{align*}
+\log p(\phi \mid y) &=  E\left[ \log p(\gamma, \phi \mid y) \mid \phi^{\text{old}}, y \right] - E\left[\log p(\gamma \mid \phi, y) \mid \phi^{\text{old}}, y \right]\\
+&= Q(\phi \mid \phi^{\text{old}}) - E\left[\log p(\gamma \mid \phi, y) \mid \phi^{\text{old}}, y \right] \tag{defn. Q} \\
+&\ge Q(\phi \mid \phi^{\text{old}}) - E\left[\log p(\gamma \mid \phi^{\text{old}}, y) \mid \phi^{\text{old}}, y \right] \tag{HW}
+\end{align*}
+\pause
+
+So 
+\begin{align*}
+&\log p(\phi^{\text{new}} \mid y) - \log p(\phi^{\text{old}} \mid y) \\
+&= \log p(\phi^{\text{new}} \mid y) - \left\{Q(\phi^{\text{old}} \mid \phi^{\text{old}}) - E\left[\log p(\gamma \mid \phi^{\text{old}}, y) \mid \phi^{\text{old}}, y \right] \right\} \\
+&\ge Q(\phi^{\text{new}} \mid \phi^{\text{old}}) - E\left[\log p(\gamma \mid \phi^{\text{old}}, y) \mid \phi^{\text{old}}, y \right] \\
+&\hspace{10mm} - \left\{Q(\phi^{\text{old}} \mid \phi^{\text{old}}) - E\left[\log p(\gamma \mid \phi^{\text{old}}, y) \mid \phi^{\text{old}}, y \right] \right\} \\
+&= Q(\phi^{\text{new}} \mid \phi^{\text{old}}) - Q(\phi^{\text{old}} \mid \phi^{\text{old}})
+\end{align*}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The EM Algorithm}
+
+Notes:
+\begin{enumerate}
+\item The EM algo isn't inherently Bayesian. It can also be used to accomplish maximum likelihood estimation.
+\item The expectation of $\log p(\gamma, \phi \mid y)$ is usually easy to compute because it is a sum, and might only depend on sufficient statistics
+% \item The EM algorithm implicitly deals with parameter constraints in the M-step
+\item The EM algorithm is parameterization independent
+\item The *Generalized* EM (GEM) just increases $Q$ instead of
+  maximizing it.The book describes many generalizations including GEM.
+\item You might find multiple modes if you start from multiple starting points (using mixture approximations afterwards)
+\item if you can, debug by printing $\log p(\phi^i \mid y)$ at every iteration and make sure it increases monotonically
+\end{enumerate}
+
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Marginal and conditional posterior density
+    approximations}
+  We can approximate $p(\phi \mid y)$ using normal, where the mode is
+  found by the EM algorithm and we can numerically calculate the
+  variance at the mode. 
+
+  In other cases, it is not possible to construct an approximation to
+  $p(\phi \mid y)$ using this method. We are going to discuss another possibility.
+ 
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Marginal and conditional posterior density
+    approximations}
+The approximation is constructed as follows:
+\[
+p_{\text{approx}}(\phi \mid y) = \frac{p(\gamma, \phi \mid
+  y)}{p_{\text{approx}}(\gamma \mid \phi, y)}
+\]
+
+$p_{\text{approx}}(\gamma \mid \phi, y)$ is an analytic approximation
+to $p(\gamma \mid \phi, y)$.
+
+\begin{itemize}
+\item If $p(\gamma \mid \phi, y)$ itself is analytic, any $\gamma$
+  should not affect the distribution on the left hand side.
+\item If the analytic approximation of the conditional distribution is
+  not exact, we need to pick $\gamma$. The suggestion is use the
+  center of the approximate distribution $p_{\text{approx}}(\gamma
+  \mid \phi, y)$, denote it as $\hat{\gamma}(\phi)$.
+\end{itemize}
+If $p_{\text{approx}}(\gamma \mid \phi, y)$ is normal with mean
+$\hat{\gamma}(\phi)$ and variance $V_\gamma(\phi)$,
+$p_{\text{approx}}(\phi \mid y) \propto p(\hat{\gamma}(\phi), \phi
+\mid y) |V_\gamma(\phi)|^{1/2}$.
+\end{frame}
+
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+  \frametitle{Marginal and conditional posterior density
+    approximations}
+Since $p(\phi \mid y) = \int p(\gamma, \phi \mid y) d\gamma$. We can also use the above trick and importance sampling to
+approximate $p(\phi \mid y)$.
+\[
+p(\phi \mid y) = \int \frac{p(\gamma, \phi \mid y)}{p_{\text{approx}}(\gamma
+  \mid \phi, y)} p_{\text{approx}}(\gamma
+  \mid \phi, y) d\gamma 
+\]
+
+Sample $\gamma^1, \ldots, \gamma^S$ from $p_{\text{approx}}(\gamma
+  \mid \phi, y)$, then $p(\phi \mid y) = (1/ S) \sum_{s=1}^S [p(\gamma^s, \phi \mid y)/p_{\text{approx}}(\gamma^s
+  \mid \phi, y)]$
+\end{frame}
+
+\end{document} 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
