@@ -1,0 +1,329 @@
+\documentclass[9pt,xcolor=table,aspectratio=169]{beamer}
+\usepackage{color}
+\usepackage{pifont}
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage{verbatim}
+\usepackage{multirow}
+\usepackage{epstopdf}
+\usepackage{threeparttable}
+\usepackage{colortbl}
+\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor,colortbl} %color table
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\usepackage[latin1]{inputenc}
+\usepackage{nicematrix}
+\definecolor{Gray}{gray}{0.85}
+\newcolumntype{a}{>{\columncolor{uklblue!20!white}}l}
+
+
+\usepackage{sansmathaccent}
+\pdfmapfile{+sansmathaccent.map}
+
+\newcommand{\indep}{\;\, \rule[0em]{.03em}{.6em} \hspace{-.25em}
+	\rule[0em]{.65em}{.03em} \hspace{-.25em}
+	\rule[0em]{.03em}{.6em}\;\,}
+\newcounter{saveenumi}
+\newcommand{\seti}{\setcounter{saveenumi}{\value{enumi}}}
+\newcommand{\conti}{\setcounter{enumi}{\value{saveenumi}}}
+
+\newcommand{\argmax}{\operatornamewithlimits{arg\ max}}                 % argmax symbol
+
+\newcommand{\E}{\mathrm{E}}                % for Expectation in math
+\newcommand{\R}{{\mathbb R}}               % R
+\newcommand{\vvec}{\mathrm{vec}}
+\newcommand{\var}{\mathrm{var}}            % for variance in math
+\newcommand{\cov}{\mathrm{cov}}            % for variance in math
+
+\newcommand{\bbeta}{{\boldsymbol \beta}}
+\newcommand{\X}{{\mathbf X}}               % X math bold
+\newcommand{\x}{{\mathbf x}}               % x math bold
+\newcommand{\Y}{{\mathbf Y}}               % Y math bold
+\newcommand{\B}{{\mathbf B}}               % B math bold
+\newcommand{\y}{{\mathbf y}}               % y math bold
+\newcommand{\Z}{{\mathbf Z}}               % Z math bold
+\newcommand{\z}{{\mathbf z}}               % z math bold
+\newcommand{\A}{{\mathbf A}}               % A math bold
+\newcommand{\PP}{{\mathbf P}}               % P math bold
+\newcommand{\QQ}{{\mathbf Q}}               % Q math bold
+\newcommand{\bb}{{\mathbf b}}              % b math bold
+\newcommand{\I}{{\mathbf I}}               % I math bold
+\newcommand{\C}{{\mathbf C}}               % C math bold
+\newcommand{\1}{{\mathbf 1}}               % 1 math bold
+
+%\newtheorem{algorithm}{Algorithm}
+\newtheorem{define}{Definition}
+\newtheorem{prop}{Proposition}
+
+
+%\usetheme{Berlin}
+%\usetheme{CambridgeUS}
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+%\definecolor{ukblue}{RGB}{0,93,170}
+%\definecolor{ukblue}{RGB}{0,51,160}
+\definecolor{ukblue}{RGB}{53,160,157}
+\definecolor{ukbluelys}{RGB}{0,51,160}
+\definecolor{ukbluelyslys}{RGB}{0,93,170}
+\definecolor{ukbluelyslyslys}{RGB}{0,93,170}
+\definecolor{uklgray}{RGB}{202,200,200}
+\definecolor{ukdgray}{RGB}{68,84,106}
+%\definecolor{uklblue}{RGB}{24,151,212}
+\definecolor{uklblue}{RGB}{222,75,42}
+\definecolor{ukdblue}{RGB}{32,44,95}
+
+
+
+
+
+\setbeamercolor{structure}{fg=ukblue}
+\setbeamercolor{frame}{fg=ukblue}
+\setbeamercolor{frametitle}{fg=white,bg=ukdgray}
+\setbeamercolor{navigation symbols}{fg=ukblue}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{palette primary}{fg=white, bg=ukblue}
+\setbeamercolor{palette secondary}{fg=ukdblue, bg=gray!9!white}
+\setbeamercolor{palette tertiary}{fg=white, bg=ukblue}
+\setbeamercolor{palette quaternary}{fg=white, bg=ukblue}
+\setbeamerfont{section in toc}{size=\large}
+\setbeamerfont{subsection in toc}{size=\small}
+\setbeamerfont{subsubsection in toc}{size=\scriptsize}
+\setbeamercolor{section in toc}{fg=black}
+\setbeamercolor{alerted text}{fg=uklblue}
+\setbeamercolor{block}{fg=while,bg=ukdblue}
+\setbeamercolor{block title example}{fg=white, bg=uklblue}
+\setbeamercolor{item projected}{fg=white,bg=ukdblue}
+
+
+\def\spc{{\cal S}}
+
+
+\newtheorem{proposition}{Proposition}
+
+
+
+
+
+
+%\pgfdeclareimage[height=0.5cm]{logo}{FMlogo1.png}
+%\logo{\pgfuseimage{logo}}
+
+
+\AtBeginSection[]
+{
+	\begin{frame}<beamer>{Outline}
+		\tableofcontents[currentsection]
+	\end{frame}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{document}
+\tikzstyle{every picture}+=[remember picture]
+\everymath{\displaystyle}
+\title[The Bayes Lasso]{The Bayesian Lasso (Park \& Casella; 2008)}
+\author[Weihang Ren]{Trevor Park \& George Casella}
+\institute[]{Department of Statistics\\ University of Kentucky \\
+%\footnotesize{Joint work with Haileab Hilafu}\\
+\vspace{0.15in}
+%Department of Statistics}\\
+%\includegraphics[scale=0.50]{ENAR2019.png}
+%\includegraphics[scale=0.04]{FMlogo1.png}
+%\vspace{0.4in}
+}
+
+\date{Dec 04, 2019}
+%\titlegraphic{\includegraphics[scale=0.14]{wildcat.JPG}\hfill{\includegraphics[scale=.80]{uklogo.pdf}}	
+\frame{\titlepage}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+\frame{
+\frametitle{Penalized Regression}
+\begin{flushleft}
+\begin{itemize}
+\item Penalized regression by solving (Frank and Friedman 1993)
+$$
+\min_{\bbeta} (\y-\X\bbeta)^{T}(\y-\X\bbeta)+\lambda\sum_j |\beta_j|^q,
+$$
+for some $q \geq 0$
+\item The Bayesian analog of this penalization involves using a prior on $\bbeta$ of the form
+$$
+\pi(\bbeta) \propto \prod_j \exp(-\lambda|\beta_j|^q)
+$$
+\item Thus the elements of $\bbeta$ have independent priors from the \textit{exponential power distribution}.
+\end{itemize}
+\end{flushleft}
+}
+
+
+
+\frame{
+\frametitle{Bimodality under the Unconditional Prior}
+\begin{flushleft}
+\begin{itemize}
+\item Put unconditional Laplace prior on $\bbeta$ with some independent prior $\pi(\sigma^2)$ on $\sigma^2$
+ 
+$$
+\prod_j \frac{\pi}{2}\exp(-\lambda|\beta_j|)\pi(\sigma^2)
+$$
+\item Then the joint posterior distribution
+$$
+\pi(\bbeta,\sigma^2 \mid \y) \propto \pi(\sigma^2)(\sigma^2)^{-(n-1)/2} \times \exp\{-\frac{1}{2\sigma^2}(\y-\X\bbeta)^{T}(\y-\X\bbeta)-\lambda\sum_j |\beta_j|\}
+$$
+\item Posteriors of this form can easily have more than one mode.
+\item Example: $p=1$, $n=10$, $\X^{T}\X=1$, $\X^{T}\y=5$, $\y^{T}\y=26$, $\lambda=3$
+	\begin{enumerate}
+		\item Least square: $\hat{\beta}=5$, $\hat{\sigma}^2=1/8$
+		\item Infinity penalty: $\hat{\beta}=0$, $\hat{\sigma}^2=26/9$
+	\end{enumerate}
+\end{itemize}
+\end{flushleft}
+}
+
+\frame{
+\frametitle{Bimodality under the Unconditional Prior}
+\begin{center}
+\includegraphics[width=0.55\textwidth]{bimodal.png}
+\end{center}
+}
+
+
+\frame{
+\frametitle{Bimodality under the Unconditional Prior}
+\begin{flushleft}
+\textbf{Issue with Bimodality}:
+\begin{itemize}
+\item Slows convergence of the Gibbs sampler.
+\item Point estimates less meaningful.
+\end{itemize}
+\textbf{Solution}: {\color{uklblue} conditionally} independent priors from the exponential power distribution
+\begin{itemize}
+\item $$ \pi(\bbeta\mid\sigma^2)\propto\prod_j\exp\{-\lambda(|\beta_j|/\sqrt{\sigma^2})^q\}$$
+\item Whenever $0 < q \le 2$, this distribution may be represented by a scale mixture of normals:
+$$
+\exp(-|z|^q) \propto \int_{0}^{\infty}\frac{1}{2\pi s}\exp(-\frac{z^2}{2s})\frac{1}{s^{3/2}}g_{q/2}(\frac{1}{2s})~ds,
+$$ where $g_{q/2}$ is a density of stable random variable with index $q/2$ which generally does not have close-form expression.
+\end{itemize}
+\end{flushleft}
+}
+
+\frame{
+\frametitle{Unimodality under the Conditional Prior}
+\begin{flushleft}
+\begin{itemize}
+\item Put conditional Laplace prior on $\bbeta$ with some independent prior $\pi(\sigma^2)$ on $\sigma^2$
+ 
+$$
+\pi(\sigma^2) \prod_j \frac{\pi}{2\sqrt{\sigma^2}}\exp(-\lambda\frac{|\beta_j|}{\sqrt{\sigma^2}})
+$$
+\item Then the joint posterior distribution $\pi(\bbeta,\sigma^2 \mid \y)$ is unimodal for typical choices of $\pi(\sigma^2)$ and any choice of $\lambda \ge 0$ in a sense that for every $c>0$ the upper level set $\{(\bbeta,\sigma^2 \y): \pi(\bbeta,\sigma^2 \mid \y) \ge c, \sigma^2 >0  \} $ is connected.
+
+\item Dropping terms that involve neither $\bbeta$ and $\sigma^2$, the log posterior is 
+$$
+\log(\pi(\sigma^2))-\frac{n+p-1}{2}\log(\sigma^2)-\frac{1}{2\sigma^2}\lVert \y-\X\bbeta \rVert_2^2 -\lambda\lVert \bbeta \rVert_1/\sqrt{\sigma^2}
+$$
+\item Taking $\phi=\bbeta/\sqrt{\sigma^2},\rho=1/\sqrt{\sigma^2}$
+$$
+\log(\pi(1/\rho^2))+\underbrace{(n+p-1)\log(\rho)}_{\text{concave}}-\underbrace{\frac{1}{2}\lVert \rho\y-\X\phi \rVert_2^2}_{\text{convex quadratic}} -\underbrace{\lambda\lVert \phi \rVert_1}_{\text{convex}}
+$$
+\item Hence the posterior is unimodal, provided that $\log(\pi(1/\rho^2))$ is concave.
+\end{itemize}
+\end{flushleft}
+}
+
+\frame{
+\frametitle{Fully Bayes Lasso}
+Representation of the Laplace distribution
+$$\frac{a}{2}\exp(-a|z|) =  \int_{0}^{\infty}\frac{1}{2\pi s}\exp(-\frac{z^2}{2s})\frac{a}{2}\exp(-a^2s/2)~ds$$
+\begin{flushleft}
+\begin{itemize}
+\item Likelihood:$$ \y\mid\mu,\X,\bbeta,\sigma^2 \sim N(\mu\mathbf{1}_n+\X\bbeta,\sigma^2\mathbf{I}_n)$$
+\item Prior: $$\bbeta\mid\sigma^2,\tau_1^2,\ldots,\tau_p^2\sim N(\mathbf{0},\sigma^2\mathbf{D}_{\tau}),$$ with $\mathbf{D}_{\tau}=\mathrm{diag}(\tau_1^2,\ldots,\tau_p^2)$.
+\item Hyper parameter: $$ \sigma,\tau_1^2,\ldots,\tau_p^2 \sim \pi(\sigma^2)d\sigma^2\prod_j\frac{\lambda^2}{2}\exp(-\frac{\lambda^2\tau^2_j}{2})d\tau_j^2 $$
+\item The parameter $\mu$ may be given an independent, flat prior.
+\item Park \& Casella (2008) used  improper prior density $\pi(\sigma^2)=1/\sigma^2$, but any inverse-gamma prior for $\sigma^2$ also would maintain conjugacy.
+\end{itemize}
+\end{flushleft}
+}
+
+\frame{
+\frametitle{Gibbs Sampler}
+\begin{flushleft}
+\begin{itemize}
+\item Because $\mu$ is rarely of interest, marginalize it out in the interest of simplicity and speed
+\item Marginalizing over $\mu$ does not affect conjugacy, which means full conditional distributions are still easy to sample
+\item Full conditional for $\bbeta$: $N((\X^T\X+\mathbf{D}_{\tau}^{-1})^{-1}\X\y,\sigma^2(\X^T\X+\mathbf{D}_{\tau}^{-1})^{-1})$
+\item Full conditional for $\sigma^2$: inverse gamma with shape $\frac{n-1}{2}+\frac{p}{2}$ and scale $(\y-\X\bbeta)^{T}(\y-\X\bbeta)/2+\bbeta^{T}\mathbf{D}_{\tau}^{-1}\bbeta/2$
+\item Full conditional for $\tau_1^2,\ldots,\tau_p^2$: $\frac{1}{\tau_j^2}$ conditionally inverse Gaussian with parameter $\mu=\sqrt{\frac{\lambda^2\sigma^2}{\beta_j^2}}$ and $\lambda^{\prime}=\lambda^2$, with $$ f(x)=\sqrt{\frac{\lambda^{\prime}}{2\pi}}x^{-3/2}\exp\{-\frac{\lambda^{\prime}(x-\mu^{\prime})^2}{2(\mu^{\prime})^2}x\}I_{(0,\infty)}(x)$$
+\end{itemize}
+\end{flushleft}
+}
+
+\frame{
+\frametitle{Choosing the Hyperparameter $\lambda$}
+\begin{flushleft}
+Marginal Maximum Likelihood
+\begin{itemize}
+\item $k$th iteration of the algorithm involves running the Gibbs sampler using a $\lambda^{(k)}$ value estimated from the sample of the previous iteration, $\lambda^{(k-1)}$ $$ \lambda^{(k)}=\sqrt{\frac{2p}{\sum_{j=1}^{p}\mathrm{E}_{\lambda^{(k-1)}}(\tau_j^2\mid\y)}}$$
+\item The conditional expectation is replaced by the average from Gibbs sample.
+\item Initial value was suggested as $\lambda^{(0)}=\frac{p\sqrt{\hat{\sigma}_{\mathrm{LS}}}}{\sum_{j=1}^{p}|\hat{\beta}^{\mathrm{LS}}_j|}$
+\end{itemize}
+Hyperpriors
+\begin{itemize}
+\item The prior density for $\lambda^2$ (not $\lambda$) should approach 0 sufficiently fast as $\lambda^2\rightarrow\infty$ (to avoid mixing problems) but should be relatively flat and place high probability near the maximum likelihood estimate.
+\item Gamma priors on $\lambda^2$ resulting conjugacy allows easy extension of the Gibbs sampler.
+$$
+\pi(\lambda^2)=\frac{\delta^r}{\Gamma(r)}(\lambda^2)^{(r-1)}\exp(-\delta\lambda^2)
+$$
+\end{itemize}
+\end{flushleft}
+
+}
+
+\frame{
+\frametitle{Comparing with Lasso and Ridge}
+\begin{center}
+\includegraphics[width=0.85\textwidth,height=7cm]{BL.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Comparison on Real Data}
+\begin{columns}
+	\begin{column}{0.25\textwidth}
+		\begin{center}
+		\includegraphics[width=1.2\textwidth]{textdata.png}
+		\end{center}
+	\end{column}
+	\begin{column}{0.75\textwidth}
+		\begin{center}
+		\includegraphics[width=0.75\textwidth]{data.png}
+		\end{center}
+	\end{column}
+\end{columns}
+
+}
+
+\end{document}
+
+
